@@ -20,6 +20,8 @@ protected:
 private:
     std::vector<std::string> arguments;
 
+    void __check_if_present();
+
 
 public:
     Arguement();

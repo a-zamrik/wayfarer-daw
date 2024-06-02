@@ -25,26 +25,31 @@ Arguement::set_present(bool _present)
     this->present = _present;
 }
 
+void
+Arguement::__check_if_present()
+{
+    // Can't get args for a paramter that is a flag
+    if (this->n_args < 1)
+        critical_error_no_line_print("%s has up to %d arguements", this->long_name.c_str(), this->n_args);
+    
+    // Arguement is not a flag, and it wasn't listed. Caller should check if present before calling.
+    if (!this->present && this->arguments.size() < 1)
+        critical_error_no_line_print("%s was not provided on cmldine (not present), but get_arg_*(...) was called on it", this->long_name.c_str());
+    
+    return;
+}
+
 string
 Arguement::get_arg_str()
 {
-    if (this->n_args < 1)
-        critical_error("%s has up to %d arguements", this->long_name.c_str(), this->n_args);
-    
-    if (!this->present)
-        critical_error("%s was not provided on cmldine", this->long_name.c_str());
-       
+    this->__check_if_present();   
     return this->arguments[0];
 }
 
 vector<string>
 Arguement::get_args_str()
 {
-    if (this->n_args < 1)
-        critical_error("%s has up to %d arguements", this->long_name.c_str(), this->n_args);
-    
-    if (!this->present)
-        critical_error("%s was not provided on cmldine", this->long_name.c_str());
+    this->__check_if_present();   
        
     return this->arguments;
 }
@@ -53,13 +58,7 @@ int
 Arguement::get_arg_int()
 {
 
-    if (this->n_args < 1)
-        critical_error("%s has up to %d arguements", this->long_name.c_str(), this->n_args);
-
-    if (!this->present)
-        critical_error("%s was not provided on cmldine", this->long_name.c_str());
-    
- 
+    this->__check_if_present();   
     return stoi(this->arguments[0]);
 }
 
@@ -147,7 +146,7 @@ ArgParser::parse(int argc, char** argv)
 
                     if (!argv[i] || args_left)
                     {
-                        critical_error("Arguement %s expects %d arguements. Only %d was provided", 
+                        critical_error_no_line_print("Arguement %s expects %d arguements. Only %d was provided", 
                             arguement->long_name.c_str(),
                             arguement->n_args,
                             arguement->n_args - args_left);

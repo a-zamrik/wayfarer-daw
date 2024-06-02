@@ -264,27 +264,28 @@ int main(int argc, char** argv)
    
     
 
+    // set up arguements
     ArgParser argparser = ArgParser();
     argparser.add_arguement("-d", "--devices", 0, "List all audio devices availble");
     argparser.add_arguement("-s", "--sample-rate", 1, "sets the global sample rate");
+    argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
+
     argparser.parse(argc, argv);
     std::cout << "Show devices = " << argparser.get_arguement("-d")->is_present() << std::endl;
     if (argparser.get_arguement("-d")->is_present())
     {
-        //print_audio_devices();
+        print_audio_devices();
+        exit(0);
     }
 
 
     std::cout << "sample rate present " << argparser.get_arguement("-s")->is_present() << std::endl;
-    std::cout << "sample rate value " << argparser.get_arguement("-s")->get_arg_int() << std::endl;
-    
-    std::cout << argparser.get_arguement("-s")->get_arg_str() << std::endl;
+    if (argparser.get_arguement("-s")->is_present()) {
+        std::cout << "sample rate value " << argparser.get_arguement("-s")->get_arg_int() << std::endl;
+    }
+  
+    std::cout << argparser.get_arguement("-o")->get_arg_str() << std::endl;
  
-
-
-
-
-
     return 0;
     //////////////
     

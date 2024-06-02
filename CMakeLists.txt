@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
+set(TARGET_NAME "wayfarer")
+
 project(pa_dev)
 
 # Tell cmake where libraries can be found
@@ -10,10 +12,10 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 file(GLOB_RECURSE sources src/*.cpp src/*.h)
 
 # Specify a executable from the found source files
-add_executable(pa_dev ${sources})
+add_executable(${TARGET_NAME} ${sources})
 
 # Specify how to compile
-target_compile_options(pa_dev PUBLIC)
+target_compile_options(${TARGET_NAME} PUBLIC)
 
 # Link portaudio library to pa_dev
-target_link_libraries(pa_dev portaudio_x64)
+target_link_libraries(${TARGET_NAME} portaudio_x64)
