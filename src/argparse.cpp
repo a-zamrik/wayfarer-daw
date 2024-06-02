@@ -9,13 +9,14 @@ Arguement::Arguement()
 {
 }
 
-Arguement::Arguement(const string _name, const string _long_name, string help, int _n_args)
+Arguement::Arguement(const string _name, const string _long_name, string help, int _n_args, ArgTypes _type)
     : name(_name) 
     , long_name(_long_name)
     , present(false)
     , arguments()
     , help_msg(help)
     , n_args(_n_args)
+    , type(_type)
 {
 }
 
@@ -71,9 +72,9 @@ ArgParser::ArgParser()
 }
 
 void
-ArgParser::add_arguement(string arg_name, string long_name, int n_args, string help)
+ArgParser::add_arguement(string arg_name, string long_name, int n_args, string help, ArgTypes type)
 {
-    shared_ptr<Arguement> arg = shared_ptr<Arguement>(new Arguement(arg_name, long_name, help, n_args));
+    shared_ptr<Arguement> arg = shared_ptr<Arguement>(new Arguement(arg_name, long_name, help, n_args, type));
     this->arguements[arg_name]  = arg;
     this->arguements[long_name] = shared_ptr<Arguement>(arg);
 }
@@ -100,6 +101,17 @@ ArgParser::show_help_dialogue()
     }
 
     exit(0);
+}
+
+static bool
+string_is_number(const char * str)
+{
+    while (*str) {
+        if (!isdigit(*str))
+            return false;
+        str++;
+    }
+    return true;
 }
 
 void
@@ -139,6 +151,13 @@ ArgParser::parse(int argc, char** argv)
                     for (args_left = arguement->n_args; args_left && argv[i]; args_left--)
                     {
                         if (*argv[i] == '-') {break;}; // Another argument begins
+
+                        // Check type of passed arguement
+                        if (arguement->type == ArgTypes::ARG_INT && !string_is_number(argv[i])) {
+                            critical_error_no_line_print("Arguement %s expects integer number(s). \"%s\" was provided",
+                                arguement->long_name.c_str(),
+                                argv[i]);
+                        }
 
                         arguement->arguments.push_back(argv[i]);
                         if (args_left != 1) i++; // don't increment i if we have all args collected for this param

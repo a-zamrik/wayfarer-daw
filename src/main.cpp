@@ -51,6 +51,7 @@
 #include "argparse.h"
 #include "error.h"
 #include <exception>
+#include "global_config.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -261,13 +262,12 @@ int main(int argc, char** argv);
 int main(int argc, char** argv)
 {
 
-   
-    
-
     // set up arguements
     ArgParser argparser = ArgParser();
     argparser.add_arguement("-d", "--devices", 0, "List all audio devices availble");
-    argparser.add_arguement("-s", "--sample-rate", 1, "sets the global sample rate");
+    argparser.add_arguement("-s", "--sample-rate", 1, "sets the global sample rate", ArgTypes::ARG_INT);
+    argparser.add_arguement("-c", "--channels", 1, "sets the number of channels", ArgTypes::ARG_INT);
+    argparser.add_arguement("-f", "--frames", 1, "sets the number of frames per window", ArgTypes::ARG_INT);
     argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
 
     argparser.parse(argc, argv);
@@ -278,15 +278,19 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-
-    std::cout << "sample rate present " << argparser.get_arguement("-s")->is_present() << std::endl;
     if (argparser.get_arguement("-s")->is_present()) {
-        std::cout << "sample rate value " << argparser.get_arguement("-s")->get_arg_int() << std::endl;
+        GConfig::get_instance().set_sample_rate(argparser.get_arguement("-s")->get_arg_int());
+    }
+
+    if (argparser.get_arguement("-c")->is_present()) {
+        GConfig::get_instance().set_num_channels(argparser.get_arguement("-c")->get_arg_int());
+    }
+
+    if (argparser.get_arguement("-f")->is_present()) {
+        GConfig::get_instance().set_frames_per_buffer(argparser.get_arguement("-f")->get_arg_int());
     }
   
-    std::cout << argparser.get_arguement("-o")->get_arg_str() << std::endl;
+    GConfig::get_instance().print_config();
  
     return 0;
-    //////////////
-    
 }

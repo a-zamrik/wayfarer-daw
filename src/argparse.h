@@ -6,18 +6,21 @@
 #include <unordered_map>
 #include <memory>
 
+enum ArgTypes {ARG_STR, ARG_INT};
+
 class Arguement
 {
       friend class ArgParser;
 
-protected:
+private:
     std::string              name;
     std::string              long_name;
     bool                     present;
     std::string              help_msg;
     int                      n_args;
+    ArgTypes                 type;
 
-private:
+
     std::vector<std::string> arguments;
 
     void __check_if_present();
@@ -25,7 +28,7 @@ private:
 
 public:
     Arguement();
-    Arguement(const std::string, const std::string, const std::string, int);
+    Arguement(const std::string, const std::string, const std::string, int, ArgTypes);
 
     void set_present(const bool);
     inline bool is_present() const {return this->present;}
@@ -51,7 +54,7 @@ public:
 
   ArgParser();
 
-  void add_arguement(std::string, std::string, int, std::string help = "");
+  void add_arguement(std::string, std::string, int, std::string help = "", ArgTypes type = ArgTypes::ARG_STR);
 
   void parse(int argc, char** argv);
 
