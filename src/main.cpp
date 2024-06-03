@@ -293,7 +293,7 @@ int main(int argc, char** argv)
   
     GConfig::get_instance().print_config();
 
-    auto sin_gen = CachedSine(5);
+    auto sin_gen = Sine(1);
     auto frame   = Frame();
 
     sin_gen.filter(frame);

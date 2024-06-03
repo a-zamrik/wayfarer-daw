@@ -15,6 +15,39 @@ public:
 
 };
 
+class Generator
+{
+
+protected:
+    std::vector<float> wave_table;
+    uint32_t           wave_index = 0;
+
+public:
+  // Empty virtual destructor for proper cleanup
+  virtual ~Generator() {}
+
+  void filter(Frame & frame);
+  virtual float get_next_sample() = 0;
+};
+
+class Sine : public Generator
+{
+
+private:
+    int t = 0;
+    int hz;
+
+public:
+    Sine() {}
+    Sine(int _hz) : hz(_hz), t(0) {}
+
+    virtual float get_next_sample();
+
+};
+
+
+
+
 // Interface class. Samples are generated and cached for later
 class CachedGenerator
 {

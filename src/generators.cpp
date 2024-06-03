@@ -26,6 +26,35 @@ Frame::Frame()
 }
 
 void
+Generator::filter(Frame & frame)
+{
+    auto frame_size = GConfig::get_instance().get_frames_per_buffer();
+    auto channels   = GConfig::get_instance().get_num_channels();
+
+    for (int c = 0; c < channels; c++)
+    {
+        for (int i = 0; i < frame_size; i++)
+        {
+            frame(c,i) = this->get_next_sample();
+        }
+    }
+}
+
+float
+Sine::get_next_sample()
+{
+
+    float next_sample = static_cast<float>(
+                sin(( 2.0 * PI * hz * this->t ) / ( GConfig::get_instance().get_sample_rate() ))
+            );
+
+    this->t++;
+    this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
+
+    return next_sample;
+}
+
+void
 CachedGenerator::filter(Frame & frame) {
     auto frame_size = GConfig::get_instance().get_frames_per_buffer();
     auto channels   = GConfig::get_instance().get_num_channels();
