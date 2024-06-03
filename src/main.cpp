@@ -52,6 +52,7 @@
 #include "error.h"
 #include <exception>
 #include "global_config.h"
+#include "generators.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -291,6 +292,21 @@ int main(int argc, char** argv)
     }
   
     GConfig::get_instance().print_config();
- 
+
+    auto sin_gen = CachedSine(5);
+    auto frame   = Frame();
+
+    sin_gen.filter(frame);
+
+    for (int c = 0; c < GConfig::get_instance().get_num_channels(); c++)
+    {
+        for (int s = 0; s < GConfig::get_instance().get_frames_per_buffer(); s++)
+        {
+            printf("%f ", frame(c,s));
+        }
+
+        printf("\n");
+    }
+    
     return 0;
 }
