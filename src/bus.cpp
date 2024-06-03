@@ -1,6 +1,7 @@
 #include "bus.h"
 #include "error.h"
 #include "global_config.h"
+#include "controller.h"
 #include <iostream>
 
 int 
@@ -38,6 +39,9 @@ MasterBus::paCallback(
             *out++ = MasterBus->gain * MasterBus->frame(c,i); 
         }
     }
+
+    // Update all controllers, need to sync with frame updates
+    GControllers::get_instance().tick(framesPerBuffer);
 
     return paContinue;
 }

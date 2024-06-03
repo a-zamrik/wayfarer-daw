@@ -54,9 +54,11 @@
 #include "global_config.h"
 #include "generators.h"
 #include "bus.h"
+#include "controller.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
+#include <WinUser.h>
 
 #if PA_USE_ASIO
 #include "pa_asio.h"
@@ -320,11 +322,26 @@ int main(int argc, char** argv)
     master_bus.init_stream();
     master_bus.start_stream();
 
+#ifdef _WIN32
 
+    KeyboardController kb_controller = KeyboardController();
+    kb_controller.add_key_bind(VK_UP, std::bind(&Sine::hz_increase, &master_bus.sin));
+    kb_controller.add_key_bind(VK_DOWN, std::bind(&Sine::hz_decrease, &master_bus.sin));
+    GControllers::get_instance().register_controller(kb_controller);
 
+#endif
 
     for (;;)
-    {}
+    {
+
+#ifdef _WIN32
+
+    //kb_controller.tick();
+
+#endif
+
+
+    }
 
     return 0;
 }

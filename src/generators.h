@@ -43,6 +43,9 @@ public:
 
     virtual float get_next_sample();
 
+    void hz_increase() {this->hz++;}
+    void hz_decrease() {this->hz--; }
+
 };
 
 

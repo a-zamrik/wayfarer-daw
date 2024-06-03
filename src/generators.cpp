@@ -46,7 +46,7 @@ Sine::get_next_sample()
 {
 
     float next_sample = static_cast<float>(
-                sin(( 2.0 * PI * hz * this->t ) / ( GConfig::get_instance().get_sample_rate() ))
+                sin(( 2.0 * PI * this->hz * this->t ) / ( GConfig::get_instance().get_sample_rate() ))
             );
 
     this->t++;

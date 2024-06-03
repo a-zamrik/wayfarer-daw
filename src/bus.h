@@ -8,9 +8,7 @@ class MasterBus
 {
 private:
 
-    // Place holder variables
-    Frame frame;
-    Sine  sin;
+
 
     // TODO: Instrument / Generator / Audio Input
 
@@ -27,6 +25,11 @@ private:
         void *userData );
 
 public:
+    // Place holder variables
+    Frame frame;
+    Sine  sin;
+
+    
     MasterBus() : frame(), sin(400), gain(0.01f) {}
 
     inline MasterBus& set_gain(float _gain) {this->gain = _gain; return *this;}
