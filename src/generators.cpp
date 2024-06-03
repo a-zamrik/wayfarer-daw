@@ -31,11 +31,12 @@ Generator::filter(Frame & frame)
     auto frame_size = GConfig::get_instance().get_frames_per_buffer();
     auto channels   = GConfig::get_instance().get_num_channels();
 
-    for (int c = 0; c < channels; c++)
+    for (int i = 0; i < frame_size; i++)
     {
-        for (int i = 0; i < frame_size; i++)
+        float sample = this->get_next_sample();
+        for (int c = 0; c < channels; c++)
         {
-            frame(c,i) = this->get_next_sample();
+            frame(c,i) = sample;
         }
     }
 }

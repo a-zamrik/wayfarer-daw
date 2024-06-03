@@ -38,7 +38,7 @@ private:
     int hz;
 
 public:
-    Sine() {}
+    
     Sine(int _hz) : hz(_hz), t(0) {}
 
     virtual float get_next_sample();

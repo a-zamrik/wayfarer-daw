@@ -53,6 +53,7 @@
 #include <exception>
 #include "global_config.h"
 #include "generators.h"
+#include "bus.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -299,15 +300,31 @@ int main(int argc, char** argv)
 
     sin_gen.filter(frame);
 
-    for (int c = 0; c < GConfig::get_instance().get_num_channels(); c++)
-    {
-        for (int s = 0; s < GConfig::get_instance().get_frames_per_buffer(); s++)
-        {
-            printf("%f ", frame(c,s));
-        }
+    // for (int c = 0; c < GConfig::get_instance().get_num_channels(); c++)
+    // {
+    //     for (int s = 0; s < GConfig::get_instance().get_frames_per_buffer(); s++)
+    //     {
+    //         printf("%f ", frame(c,s));
+    //     }
 
-        printf("\n");
+    //     printf("\n");
+    // }
+
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+    {
+        critical_error_no_line_print("Failed to initialize portaudio");
     }
-    
+
+    MasterBus master_bus = MasterBus().set_gain(0.01f);
+    master_bus.init_stream();
+    master_bus.start_stream();
+
+
+
+
+    for (;;)
+    {}
+
     return 0;
 }
