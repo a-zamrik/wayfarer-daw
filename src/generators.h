@@ -36,6 +36,7 @@ class Sine : public Generator
 private:
     int t = 0;
     int hz;
+    int change_hz = 0;
 
 public:
     
@@ -43,8 +44,8 @@ public:
 
     virtual float get_next_sample();
 
-    void hz_increase() {this->hz++;}
-    void hz_decrease() {this->hz--; }
+    void hz_increase() {this->change_hz++;}
+    void hz_decrease() {this->change_hz--; }
 
 };
 

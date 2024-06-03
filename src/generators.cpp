@@ -45,12 +45,22 @@ float
 Sine::get_next_sample()
 {
 
+    // TODO: When the sample is zero, we should do the increment
+
     float next_sample = static_cast<float>(
                 sin(( 2.0 * PI * this->hz * this->t ) / ( GConfig::get_instance().get_sample_rate() ))
             );
 
     this->t++;
     this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
+
+    // Want to chang hz when the sine wave equates to zero
+    if (this->change_hz &&  std::abs(next_sample) <= 1e-4)
+    {
+        printf("%f\n", next_sample);
+        this->hz += this->change_hz;
+        this->change_hz = 0;
+    }
 
     return next_sample;
 }
