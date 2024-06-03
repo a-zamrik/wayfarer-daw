@@ -292,6 +292,7 @@ int main(int argc, char** argv)
     }
   
     GConfig::get_instance().print_config();
+    GConfig::get_instance().check_config();
 
     auto sin_gen = Sine(1);
     auto frame   = Frame();
