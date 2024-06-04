@@ -4,7 +4,8 @@
 #include <cassert>
 #include <iostream>
 
-#define PI (3.14159265359)
+#define PI  (3.14159265359)
+#define TWO_PI (2.0 * PI)
 
 Frame::Frame()
 {
@@ -41,26 +42,30 @@ Generator::filter(Frame & frame)
     }
 }
 
+void
+Sine::set_hz(float _new_hz)
+{
+    if (_new_hz < 20.0f || _new_hz > 20000.0f) { return; }
+
+    int last_t = this->t - 1;
+
+    // Need phase of new sine wave to match the phase of old wave to prevent clicking
+    float current_phase = static_cast<float>(TWO_PI * this->hz * last_t + this->phase_shift);
+    this->phase_shift = static_cast<float>(current_phase - (TWO_PI * _new_hz * last_t));
+    this->hz = _new_hz;
+}
+
 float
 Sine::get_next_sample()
 {
-
     // TODO: When the sample is zero, we should do the increment
 
     float next_sample = static_cast<float>(
-                sin(( 2.0 * PI * this->hz * this->t ) / ( GConfig::get_instance().get_sample_rate() ))
+                sin(( ( TWO_PI * this->hz * this->t) + this->phase_shift ) / ( GConfig::get_instance().get_sample_rate() ))
             );
 
     this->t++;
     this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
-
-    // Want to chang hz when the sine wave equates to zero
-    if (this->change_hz &&  std::abs(next_sample) <= 1e-4)
-    {
-        printf("%f\n", next_sample);
-        this->hz += this->change_hz;
-        this->change_hz = 0;
-    }
 
     return next_sample;
 }

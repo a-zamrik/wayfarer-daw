@@ -19,8 +19,7 @@ class Generator
 {
 
 protected:
-    std::vector<float> wave_table;
-    uint32_t           wave_index = 0;
+
 
 public:
   // Empty virtual destructor for proper cleanup
@@ -35,17 +34,18 @@ class Sine : public Generator
 
 private:
     int t = 0;
-    int hz;
-    int change_hz = 0;
+    float hz = 400;
+    float phase_shift = 0;
 
 public:
     
-    Sine(int _hz) : hz(_hz), t(0) {}
+    Sine(float _hz) : hz(_hz), t(0) {}
 
     virtual float get_next_sample();
 
-    void hz_increase() {this->change_hz++;}
-    void hz_decrease() {this->change_hz--; }
+    void set_hz(float);
+    void hz_increase() {this->set_hz(this->hz + 50.0f);}
+    void hz_decrease() {this->set_hz(this->hz - 50.0f);}
 
 };
 
