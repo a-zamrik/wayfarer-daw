@@ -55,6 +55,7 @@
 #include "generators.h"
 #include "bus.h"
 #include "controller.h"
+#include "midi.h"
 
 #ifdef _WIN32
 #include <windows.h>
