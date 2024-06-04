@@ -53,25 +53,34 @@ public:
 
 
 // Interface class. Samples are generated and cached for later
-class CachedGenerator
+class WaveTable
 {
 
 protected:
+    // TODO: Turn into circular buffer
     std::vector<float> wave_table;
-    uint32_t           wave_index = 0;
+    float              wave_index = 0;
+    float              wave_step = 0;
+    float              min_hz;
+    float              hz;
 
 public:
   // Empty virtual destructor for proper cleanup
-  virtual ~CachedGenerator() {}
+  virtual ~WaveTable() {}
 
   void filter(Frame & frame);
+  inline virtual float get_next_sample();
 };
 
 
-class CachedSine : public CachedGenerator
+class WTSine : public WaveTable
 {
 public:
-    CachedSine(int hz);
+    WTSine(float _min_hz, float _hz);
+
+
+    void hz_increase() {this->wave_step += 0.001f; }
+    void hz_decrease() {this->wave_step -= 0.001f; }
 };
 
 

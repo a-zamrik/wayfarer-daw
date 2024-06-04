@@ -66,31 +66,57 @@ Sine::get_next_sample()
 }
 
 void
-CachedGenerator::filter(Frame & frame) {
+WaveTable::filter(Frame & frame) {
     auto frame_size = GConfig::get_instance().get_frames_per_buffer();
     auto channels   = GConfig::get_instance().get_num_channels();
 
-    for (int c = 0; c < channels; c++)
+    for (int i = 0; i < frame_size; i++)
     {
-        for (int i = 0; i < frame_size; i++)
+        float sample = this->get_next_sample();
+        for (int c = 0; c < channels; c++)
         {
-            if (wave_index == this->wave_table.size()) wave_index = 0;
-            frame(c,i) = this->wave_table[wave_index];
-            wave_index++;
+            frame(c,i) = sample;
         }
     }
 }
 
-CachedSine::CachedSine(int hz)
+
+inline float
+WaveTable::get_next_sample() {
+
+    int wi;
+    float frac;
+
+    if (wave_index >= this->wave_table.size())
+    {
+        wave_index = 0.f;
+    }
+
+    wi = (int) wave_index;
+    frac = wave_index - wi;
+
+
+    float sample = (this->wave_table[wi] * (1.0f - frac)) + (this->wave_table[(wi + 1) % this->wave_table.size()] * (frac));
+    wave_index += wave_step;
+        
+    return sample;
+}
+
+
+WTSine::WTSine(float _min_hz, float _hz)
 {
+    this->min_hz = _min_hz;
+    this->hz     = _hz;
+    this->wave_step = 1;
+
     auto sample_rate = GConfig::get_instance().get_sample_rate();
 
     // Generate the wave table. We only need one cycle at a resultion of the sample rate
-    for (unsigned i = 0; i < sample_rate / hz; i++)
+    for (unsigned i = 0; i < (sample_rate / _min_hz); i++)
     {
         this->wave_table.push_back(
             static_cast<float>(
-                sin(( 2.0 * PI * hz * i ) / ( sample_rate ))
+                sin(( 2.0 * PI * _min_hz * i ) / ( sample_rate ))
             )
         );
 
