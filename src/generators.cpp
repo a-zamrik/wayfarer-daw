@@ -58,10 +58,21 @@ Sine::set_hz(float _new_hz)
 float
 Sine::get_next_sample()
 {
-    if (!this->on) {
-        return 0.0f;
-    }
 
+    //printf("%u\n", this->adsr_idx);
+    float env_val;
+    if (this->on) 
+    {
+        env_val = this->adsr_env.step_ads();
+        //printf("%f\n", env_val);
+        //env_val = 1.0f;
+    }
+    else
+    {
+        env_val = this->adsr_env.step_r();
+        //env_val = 0.0f;
+    }
+    //printf("%f\n", env_val);
 
     float next_sample = static_cast<float>(
                 sin(( ( TWO_PI * this->hz * this->t) + this->phase_shift ) / ( GConfig::get_instance().get_sample_rate() ))
@@ -71,7 +82,7 @@ Sine::get_next_sample()
     this->t++;
     //this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
 
-    return next_sample;
+    return next_sample * env_val;
 }
 
 void

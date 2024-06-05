@@ -6,8 +6,6 @@
 #include <iostream>
 #include <algorithm>
 
-
-
 int 
 MasterBus::paCallback( 
     const void *inputBuffer, void *outputBuffer,
@@ -116,7 +114,6 @@ MasterBus::stop_stream()
         critical_error_no_line_print("Failed to stop audio stream");
     }
 }
-
 
 MasterBus& 
 MasterBus::set_gain(float _gain) 

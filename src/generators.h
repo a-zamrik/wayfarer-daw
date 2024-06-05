@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include "envelope.h"
 
 class Frame
 {
@@ -37,19 +38,31 @@ private:
     float hz = 400;
     float phase_shift = 0;
 
-    
+    Envelope adsr_env;
+
+    bool on = false;
 
 public:
 
-    bool on = false;
-    
-    Sine(float _hz) : hz(_hz), t(0) {on=false;}
+    // TODO: add isDriving 
+    bool driving = false;
 
+    
+    Sine(float _hz) : hz(_hz), t(0), adsr_env(0.03f, 1.0f, 0.1f, 1.0f, 0.5f) {on=false;}
     virtual float get_next_sample();
 
     void set_hz(float);
     void hz_increase() {this->set_hz(this->hz + 50.0f);}
     void hz_decrease() {this->set_hz(this->hz - 50.0f);}
+
+    void turn_on() {
+        if (!this->on) {
+            this->on = true; 
+            adsr_env.reset();
+        }
+    }
+    void turn_off() {this->on = false;}
+    bool is_on() {return this->on;}
 
 };
 

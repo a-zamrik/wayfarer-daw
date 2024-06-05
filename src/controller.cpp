@@ -31,6 +31,7 @@ Controller::tick()
 
 KeyboardController::KeyboardController()
 {
+    // TODO: key roll starting form C mapped to 'A key'
     this->midi_bindings[0x41] = 57u; //a
     this->midi_bindings[0x53] = 58u; //s
     this->midi_bindings[0x44] = 59u; //d

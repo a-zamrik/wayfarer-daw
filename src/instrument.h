@@ -9,9 +9,11 @@ class MidiEvent;
 
 class Instrument
 {
-  public:
 
+  protected: 
     
+
+  public:
 
 
     virtual void handle_event(MidiEvent & event) = 0;    
@@ -22,6 +24,7 @@ class SineSynth : public Instrument
 {
     private:
         std::vector<Sine> oscilators;
+
 
     public:
         SineSynth();

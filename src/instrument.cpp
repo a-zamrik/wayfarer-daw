@@ -7,7 +7,7 @@
 SineSynth::SineSynth()
 {
     // Generate notes A3 (57) to A4 (69)
-    for (unsigned n = 57; n <= 69; n++)
+    for (unsigned n = 57; n <= 61; n++)
     {
         printf("Sine @%f\n", GMidi::midi_note_to_freq(n));
         this->oscilators.push_back(Sine(GMidi::midi_note_to_freq(n)));
@@ -15,9 +15,14 @@ SineSynth::SineSynth()
 
     for (auto osc : this->oscilators)
     {
-        osc.on = false;
+        osc.turn_off();
     }
+
+    
 }
+
+
+
 
 void
 SineSynth::handle_event(MidiEvent & event)
@@ -28,9 +33,12 @@ SineSynth::handle_event(MidiEvent & event)
 
         if (event.is_note_pressed())
         {
-            //printf("Press\n");
+            this->oscilators[index].turn_on();
         }
-        this->oscilators[index].on = event.is_note_pressed();
+        else
+        {
+            this->oscilators[index].turn_off();
+        }
     }else{
         // printf("INDEX OOR\n");
     }
@@ -59,10 +67,9 @@ SineSynth::get_next_sample()
     float out = 0.0f;
     for (Sine & osc : this->oscilators)
     {
-        if (osc.on) {
-            
+        //if (osc.on) {
             out += osc.get_next_sample();
-        }
+        //}
     }
     return out;
 }
