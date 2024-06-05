@@ -55,7 +55,9 @@
 #include "generators.h"
 #include "bus.h"
 #include "controller.h"
+#include "instrument.h"
 #include "midi.h"
+
 
 #ifdef _WIN32
 #include <windows.h>
@@ -273,6 +275,7 @@ int main(int argc, char** argv)
     argparser.add_arguement("-s", "--sample-rate", 1, "sets the global sample rate", ArgTypes::ARG_INT);
     argparser.add_arguement("-c", "--channels", 1, "sets the number of channels", ArgTypes::ARG_INT);
     argparser.add_arguement("-f", "--frames", 1, "sets the number of frames per window", ArgTypes::ARG_INT);
+    argparser.add_arguement("-g", "--gain", 1, "adjusts master output gain. 0.0 <= gain <= 0.05. Gain will be truncated if limits exceeded", ArgTypes::ARG_FLOAT);
     argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
 
     argparser.parse(argc, argv);
@@ -294,14 +297,18 @@ int main(int argc, char** argv)
     if (argparser.get_arguement("-f")->is_present()) {
         GConfig::get_instance().set_frames_per_buffer(argparser.get_arguement("-f")->get_arg_int());
     }
+
+    if (argparser.get_arguement("-g")->is_present()) {
+        printf("-g := %f\n", argparser.get_arguement("-g")->get_arg_float());
+    }
   
     GConfig::get_instance().print_config();
     GConfig::get_instance().check_config();
 
-    auto sin_gen = Sine(1);
-    auto frame   = Frame();
+    // auto sin_gen = Sine(1);
+    // auto frame   = Frame();
 
-    sin_gen.filter(frame);
+    // sin_gen.filter(frame);
 
     // for (int c = 0; c < GConfig::get_instance().get_num_channels(); c++)
     // {
@@ -319,16 +326,18 @@ int main(int argc, char** argv)
         critical_error_no_line_print("Failed to initialize portaudio");
     }
 
-    MasterBus master_bus = MasterBus().set_gain(0.01f);
+    MasterBus master_bus = MasterBus().set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
     master_bus.init_stream();
     master_bus.start_stream();
 
 #ifdef _WIN32
 
     KeyboardController kb_controller = KeyboardController();
-    kb_controller.add_key_bind(VK_UP, std::bind(&Sine::hz_increase, &master_bus.sin));
-    kb_controller.add_key_bind(VK_DOWN, std::bind(&Sine::hz_decrease, &master_bus.sin));
+    // kb_controller.add_key_bind(VK_UP, std::bind(&Sine::hz_increase, &master_bus.sin));
+    // kb_controller.add_key_bind(VK_DOWN, std::bind(&Sine::hz_decrease, &master_bus.sin));
     GControllers::get_instance().register_controller(kb_controller);
+    
+    GMidi::get_instance().activate_instrument(&master_bus.synth, "sine_synth");
 
 #endif
 

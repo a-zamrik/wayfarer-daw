@@ -1,14 +1,14 @@
-#ifndef _MIDI_H
-#define _MIDI_H
+#ifndef _MIDI_H_
+#define _MIDI_H_
 
 #include <queue>
 #include <memory>
 #include <cmath>
 #include <unordered_map>
 #include <string>
+#include "instrument.h"
 
-#define KEY_ON  (1)
-#define KEY_OFF (0)
+
 
 
 
@@ -35,10 +35,8 @@ class GMidi
     private:
         GMidi() {}                        // Constructor? (the {} brackets) are needed here.
 
-        //TODO: list of active instrumetns
-        // std::unordered_map<std::string, instrument> active_instruments;
 
-        std::queue<std::unique_ptr<MidiEvent>> event_queue;
+        std::unordered_map<std::string, SineSynth *> active_instruments;
 
     public:
         static GMidi& get_instance()
@@ -52,9 +50,11 @@ class GMidi
         void operator=(GMidi const&)  = delete;
 
 
-        static inline float midi_note_to_freq(unsigned midi_note);
+        static float midi_note_to_freq(unsigned midi_note);
 
         void create_event(unsigned note_num, bool is_pressed);
+
+        void activate_instrument(SineSynth *  i, std::string name);
 
 };
 

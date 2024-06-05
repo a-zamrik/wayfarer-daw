@@ -2,6 +2,7 @@
 #define BUS_H
 
 #include "generators.h"
+#include "instrument.h"
 #include "../include/portaudio.h"
   
 class MasterBus
@@ -26,13 +27,13 @@ private:
 
 public:
     // Place holder variables
-    Frame frame;
-    Sine  sin;
+    Frame      frame;
+    SineSynth  synth;
 
     
-    MasterBus() : frame(), sin(600), gain(0.01f) {}
+    MasterBus() : frame(), synth(), gain(0.01f) {}
 
-    inline MasterBus& set_gain(float _gain) {this->gain = _gain; return *this;}
+    MasterBus& set_gain(float _gain);
 
     void init_stream();
 

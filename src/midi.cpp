@@ -1,6 +1,7 @@
 #include "midi.h"
+#include "instrument.h"
 
-inline float 
+float 
 GMidi::midi_note_to_freq(unsigned midi_note) 
 {
     constexpr float A4_FREQ = 440.0f;
@@ -12,5 +13,16 @@ GMidi::midi_note_to_freq(unsigned midi_note)
 void 
 GMidi::create_event(unsigned note_num, bool is_pressed) 
 {
-    this->event_queue.emplace(new MidiEvent(is_pressed, note_num));
+    auto event = MidiEvent(is_pressed, note_num);
+    for (auto i : this->active_instruments)
+    {
+        i.second->handle_event(event);
+    }
+
+}
+
+void 
+GMidi::activate_instrument(SineSynth  * i, std::string name)
+{
+    this->active_instruments[name] = i;
 }

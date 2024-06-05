@@ -58,14 +58,18 @@ Sine::set_hz(float _new_hz)
 float
 Sine::get_next_sample()
 {
-    // TODO: When the sample is zero, we should do the increment
+    if (!this->on) {
+        return 0.0f;
+    }
+
 
     float next_sample = static_cast<float>(
                 sin(( ( TWO_PI * this->hz * this->t) + this->phase_shift ) / ( GConfig::get_instance().get_sample_rate() ))
             );
 
+    // TODO: NEED OT PREVENT OVERFLOW
     this->t++;
-    this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
+    //this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
 
     return next_sample;
 }

@@ -12,6 +12,7 @@ class Controller
 {
 protected:
     std::unordered_map<int, std::function<void()>> keybindings; 
+    std::unordered_map<int, unsigned> midi_bindings; 
 
 public:
 
@@ -24,7 +25,7 @@ class KeyboardController : public Controller
 {
 
 public:
-
+    KeyboardController();
     virtual void add_key_bind(int, std::function<void()>);
 };
 

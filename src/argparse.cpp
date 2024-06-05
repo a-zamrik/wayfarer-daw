@@ -63,6 +63,13 @@ Arguement::get_arg_int()
     return stoi(this->arguments[0]);
 }
 
+float
+Arguement::get_arg_float()
+{
+    this->__check_if_present();   
+    return stof(this->arguments[0]);
+}
+
 
 
 ArgParser::ArgParser() 
@@ -114,6 +121,17 @@ string_is_number(const char * str)
     return true;
 }
 
+static bool
+string_is_float(const char * str)
+{
+    while (*str) {
+        if (!isdigit(*str) && (*str != '.' && *str != '-'))
+            return false;
+        str++;
+    }
+    return true;
+}
+
 void
 ArgParser::parse(int argc, char** argv)
 {
@@ -150,11 +168,19 @@ ArgParser::parse(int argc, char** argv)
                     int args_left;
                     for (args_left = arguement->n_args; args_left && argv[i]; args_left--)
                     {
-                        if (*argv[i] == '-') {break;}; // Another argument begins
+                        //if (*argv[i] == '-') {break;}; // Another argument begins
+                        if (this->arguements.find(argv[i]) != this->arguements.end()) {break;} // Another argument begins
 
                         // Check type of passed arguement
                         if (arguement->type == ArgTypes::ARG_INT && !string_is_number(argv[i])) {
                             critical_error_no_line_print("Arguement %s expects integer number(s). \"%s\" was provided",
+                                arguement->long_name.c_str(),
+                                argv[i]);
+                        }
+
+                        // Check type of passed arguement
+                        if (arguement->type == ArgTypes::ARG_FLOAT && !string_is_float(argv[i])) {
+                            critical_error_no_line_print("Arguement %s expects float number(s). \"%s\" was provided",
                                 arguement->long_name.c_str(),
                                 argv[i]);
                         }

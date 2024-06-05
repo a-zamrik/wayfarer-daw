@@ -2,7 +2,11 @@
 #include "error.h"
 #include "global_config.h"
 #include "controller.h"
+#include "instrument.h"
 #include <iostream>
+#include <algorithm>
+
+
 
 int 
 MasterBus::paCallback( 
@@ -29,7 +33,7 @@ MasterBus::paCallback(
     MasterBus * MasterBus =  static_cast<class MasterBus*>(userData);
 
     // Sin generotor populate frame
-    MasterBus->sin.filter(MasterBus->frame);
+    MasterBus->synth.render(MasterBus->frame);
 
     // Pass frame info to output 
     for (unsigned i = 0; i < framesPerBuffer; i++)
@@ -39,6 +43,8 @@ MasterBus::paCallback(
             *out++ = MasterBus->gain * MasterBus->frame(c,i); 
         }
     }
+
+    // TODO: Add limiter
 
     // Update all controllers, need to sync with frame updates
     GControllers::get_instance().tick(framesPerBuffer);
@@ -109,4 +115,16 @@ MasterBus::stop_stream()
         std::cerr << Pa_GetErrorText(err) << std::endl;
         critical_error_no_line_print("Failed to stop audio stream");
     }
+}
+
+
+MasterBus& 
+MasterBus::set_gain(float _gain) 
+{
+    constexpr float MAX_GAIN = 0.05f;
+    this->gain = std::max(std::min(_gain, MAX_GAIN), 0.0f);
+
+    printf("%f\n", this->gain);
+
+    return *this;
 }

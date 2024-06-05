@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <memory>
 
-enum ArgTypes {ARG_STR, ARG_INT};
+enum ArgTypes {ARG_STR, ARG_INT, ARG_FLOAT};
 
 class Arguement
 {
@@ -39,6 +39,7 @@ public:
     std::string get_arg_str();
     std::vector<std::string> get_args_str();
     int get_arg_int();
+    float get_arg_float();
 };
 
 

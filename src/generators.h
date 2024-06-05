@@ -37,9 +37,13 @@ private:
     float hz = 400;
     float phase_shift = 0;
 
-public:
     
-    Sine(float _hz) : hz(_hz), t(0) {}
+
+public:
+
+    bool on = false;
+    
+    Sine(float _hz) : hz(_hz), t(0) {on=false;}
 
     virtual float get_next_sample();
 
