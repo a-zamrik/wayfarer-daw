@@ -57,6 +57,7 @@
 #include "controller.h"
 #include "instrument.h"
 #include "midi.h"
+#include "loader/wave.h"
 
 
 #ifdef _WIN32
@@ -264,10 +265,14 @@ error:
 /*******************************************************************/
 
 
-
 int main(int argc, char** argv);
 int main(int argc, char** argv)
 {
+    WaveFileLoader wave_loader = WaveFileLoader("C:\\Users\\Adam\\Music\\The Mamas & the Papas - California Dreamin'.wav");
+
+
+    exit(0);
+    
 
     // set up arguements
     ArgParser argparser = ArgParser();
