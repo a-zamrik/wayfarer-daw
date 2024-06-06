@@ -346,8 +346,9 @@ int main(int argc, char** argv)
 
 #ifdef _WIN32
 
-    //kb_controller.tick();
-    Sleep(10000000);
+    // Update all controllers every 50 ms
+    kb_controller.tick();
+    Sleep(50);
 
 #endif
 

@@ -1,45 +1,66 @@
 #include "envelope.h"
 #include "global_config.h"
+#include <cmath>
+
+
+float 
+lerp(float a, float b, float t) {
+  return (1 - t) * a + t * b;
+}
 
 Envelope::Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a)
 {
-    int attack_n_samples   = static_cast<int>( GConfig::get_instance().get_sample_rate() * atk_t);
-    int decay_n_samples    = static_cast<int>( GConfig::get_instance().get_sample_rate() * dec_t);
-    int release_n_samples  = static_cast<int>( GConfig::get_instance().get_sample_rate() * rel_t);
 
-    // Create attack rise
-    for (int i = 0; i < attack_n_samples; i++)
-    {
-        this->adsr_env.push_back(((float) i / (float) attack_n_samples) * atk_a);
-    }
+    this->attack_time = atk_t;
+    this->decay_time = dec_t;
+    this->release_time = rel_t;
 
-    // Create decay to sustain
-    for (int i = 0; i < decay_n_samples; i++)
-    {
-        this->adsr_env.push_back((1.0f - ((float) i / (float) decay_n_samples)) * sustain_amp);
-    }
 
-    // This is the index we will sit at if the note is being held
-    this->release_idx = static_cast<int>(this->adsr_env.size() - 1);
+    this->attack_n_samples   = GConfig::get_instance().get_sample_rate() * atk_t;
+    this->decay_n_samples    = GConfig::get_instance().get_sample_rate() * dec_t;
+    this->release_n_samples  = GConfig::get_instance().get_sample_rate() * rel_t;
 
-    // Create sustain to release
-    for (int i = 0; i < release_n_samples; i++)
-    {
-        this->adsr_env.push_back((1.0f - ((float) i / (float) release_n_samples)) * (sus_a));
-    }
+    // Place step at end of envelope. wait for reset to be called
+    this->step = static_cast<int>(this->attack_n_samples + this->decay_n_samples + this->release_n_samples);
 
-    this->step = this->adsr_env.size();
     this->sustain_amp = sus_a;
+    this->attack_amp  = atk_a;
+}
+
+float 
+Envelope::__step_a()
+{
+
+    float out = (static_cast<float>(this->step) /  attack_n_samples) * this->attack_amp;
+    this->step++;
+    return out;
+
+}
+
+float 
+Envelope::__step_d()
+{
+
+    float ratio = ( (static_cast<float>(this->step) - this->attack_n_samples) /  decay_n_samples);
+    float out = lerp(this->attack_amp, this->sustain_amp, ratio);
+    this->step++;
+    return out;
+
 }
 
 float
 Envelope::step_ads()
 {
-    if (this->step <= this->release_idx)
-    {
-        return this->adsr_env[this->step++];
-    } else {
-        
+    if (this->step <= this->attack_n_samples)
+    { // In attack portion
+        return this->__step_a();
+    } 
+    else if (this->step <= (this->attack_n_samples + this->decay_n_samples)) 
+    { // Decay portion
+        return this->__step_d();
+    } 
+    else 
+    {  // Sustain portion. If caller needs release, they will call step_r 
         return this->sustain_amp;
     }
 }
@@ -47,15 +68,20 @@ Envelope::step_ads()
 float
 Envelope::step_r()
 {
-    if (this->step <= this->release_idx)
-    {
-        this->step = this->release_idx;
+    if (this->step <= (this->attack_n_samples + this->decay_n_samples))
+    {  // Release was called before we reached sustain part. jump to release part
+        this->step = static_cast<int>(this->attack_n_samples + this->decay_n_samples);
     } 
 
-    if (this->step >= this->adsr_env.size())
-    {
+    if (this->step >= (this->attack_n_samples + this->decay_n_samples + this->release_n_samples))
+    {   // Envelope finished, Reset must be called to restart
         return 0;
+    } 
+    else
+    {   // Calculate release value
+        float ratio = ((static_cast<float>(this->step) - this->attack_n_samples - this->decay_n_samples) /  this->release_n_samples);
+        float out = lerp(this->sustain_amp, 0.0f, ratio);
+        this->step++;
+        return out;
     }
-
-    return this->adsr_env[this->step++];
 }

@@ -44,8 +44,7 @@ MasterBus::paCallback(
 
     // TODO: Add limiter
 
-    // Update all controllers, need to sync with frame updates
-    GControllers::get_instance().tick(framesPerBuffer);
+
 
     return paContinue;
 }
