@@ -120,7 +120,5 @@ MasterBus::set_gain(float _gain)
     constexpr float MAX_GAIN = 0.05f;
     this->gain = std::max(std::min(_gain, MAX_GAIN), 0.0f);
 
-    printf("%f\n", this->gain);
-
     return *this;
 }

@@ -1,7 +1,7 @@
 #ifndef BUS_H
 #define BUS_H
 
-#include "generators.h"
+#include "oscillators.h"
 #include "instrument.h"
 #include "../include/portaudio.h"
   

@@ -73,7 +73,7 @@ Envelope::step_r()
         this->step = static_cast<int>(this->attack_n_samples + this->decay_n_samples);
     } 
 
-    if (this->step >= (this->attack_n_samples + this->decay_n_samples + this->release_n_samples))
+    if (this->is_done())
     {   // Envelope finished, Reset must be called to restart
         return 0;
     } 
@@ -84,4 +84,10 @@ Envelope::step_r()
         this->step++;
         return out;
     }
+}
+
+inline bool
+Envelope::is_done()
+{
+    return this->step >= (this->attack_n_samples + this->decay_n_samples + this->release_n_samples);
 }

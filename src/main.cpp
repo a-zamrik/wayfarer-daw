@@ -52,7 +52,7 @@
 #include "error.h"
 #include <exception>
 #include "global_config.h"
-#include "generators.h"
+#include "oscillators.h"
 #include "bus.h"
 #include "controller.h"
 #include "instrument.h"
@@ -317,8 +317,8 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 
     KeyboardController kb_controller = KeyboardController();
-    kb_controller.add_key_bind(VK_UP, std::bind(&KeyboardController::octave_shift_up, &kb_controller));
-    kb_controller.add_key_bind(VK_DOWN, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
+    kb_controller.add_key_bind(VK_MAP::X, std::bind(&KeyboardController::octave_shift_up, &kb_controller));
+    kb_controller.add_key_bind(VK_MAP::Z, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
     GControllers::get_instance().register_controller(kb_controller);
     
     GMidi::get_instance().activate_instrument(&master_bus.synth, "sine_synth");

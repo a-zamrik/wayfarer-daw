@@ -1,4 +1,4 @@
-#include "generators.h"
+#include "oscillators.h"
 #include "global_config.h"
 #include <math.h>
 #include <cassert>
@@ -83,6 +83,12 @@ Sine::get_next_sample()
     //this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
 
     return next_sample * env_val;
+}
+
+bool
+Sine::is_outputing()
+{
+    return this->on || (!this->on && !this->adsr_env.is_done());
 }
 
 void

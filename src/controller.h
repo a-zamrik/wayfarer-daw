@@ -7,10 +7,45 @@
 #include <functional>
 #include "global_config.h"
 
+#ifdef _WIN32
+
+enum VK_MAP
+{
+    A = 0x41,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z
+};
+
+#endif
+
 
 class Controller
 {
 protected:
+    std::unordered_map<int, bool> keybindings_state; 
     std::unordered_map<int, std::function<void()>> keybindings; 
     std::unordered_map<int, unsigned> midi_bindings; 
     unsigned midi_octave_offset = 0;

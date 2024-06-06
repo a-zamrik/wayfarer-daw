@@ -40,7 +40,9 @@ SineSynth::handle_event(MidiEvent & event)
         {
             this->oscilators[index].turn_off();
         }
-    }else{
+    }
+    else
+    {
         // printf("INDEX OOR\n");
     }
     
@@ -68,9 +70,10 @@ SineSynth::get_next_sample()
     float out = 0.0f;
     for (Sine & osc : this->oscilators)
     {
-        //if (osc.on) {
+        // Only oscilators that have samples to output should be invoked
+        if (osc.is_outputing()) {
             out += osc.get_next_sample();
-        //}
+        }
     }
     return out;
 }

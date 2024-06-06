@@ -2,7 +2,7 @@
 #define _INSTRUMENT_H_
 
 
-#include "generators.h"
+#include "oscillators.h"
 #include <vector>
 
 class MidiEvent;

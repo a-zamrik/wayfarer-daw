@@ -7,7 +7,7 @@
 class Envelope
 {
 
-    protected:
+protected:
 
     float attack_n_samples;
     float decay_n_samples;
@@ -27,7 +27,7 @@ class Envelope
     float __step_d();
 
 
-    public:
+public:
     Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a);
 
 
@@ -35,6 +35,9 @@ class Envelope
 
     float step_ads();
     float step_r();
+
+    // Envlope has finished; this->step is at end of envelope, need to call reset()
+    bool is_done();
 
 };
 

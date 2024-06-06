@@ -64,6 +64,9 @@ public:
     void turn_off() {this->on = false;}
     bool is_on() {return this->on;}
 
+    // returns true if it is still producing samlples != 0
+    bool is_outputing();
+
 };
 
 
