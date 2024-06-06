@@ -13,20 +13,24 @@ class Controller
 protected:
     std::unordered_map<int, std::function<void()>> keybindings; 
     std::unordered_map<int, unsigned> midi_bindings; 
+    unsigned midi_octave_offset = 0;
 
 public:
 
-    virtual void add_key_bind(int, std::function<void()>) {};
     void tick();
 
 };
 
 class KeyboardController : public Controller
 {
+private:
+    void build_keyboard();
 
 public:
     KeyboardController();
-    virtual void add_key_bind(int, std::function<void()>);
+    void add_key_bind(int, std::function<void()>);
+    void octave_shift_up() {this->midi_octave_offset++; this->build_keyboard();}
+    void octave_shift_down() {this->midi_octave_offset--; this->build_keyboard();}
 };
 
 

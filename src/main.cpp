@@ -276,6 +276,7 @@ int main(int argc, char** argv)
     argparser.add_arguement("-c", "--channels", 1, "sets the number of channels", ArgTypes::ARG_INT);
     argparser.add_arguement("-f", "--frames", 1, "sets the number of frames per window", ArgTypes::ARG_INT);
     argparser.add_arguement("-g", "--gain", 1, "adjusts master output gain. 0.0 <= gain <= 0.05. Gain will be truncated if limits exceeded", ArgTypes::ARG_FLOAT);
+    argparser.add_arguement("-cpp", "--controller-poll-period", 1, "In milliseconds, how offten to poll for controller input", ArgTypes::ARG_INT);
     argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
 
     argparser.parse(argc, argv);
@@ -298,27 +299,10 @@ int main(int argc, char** argv)
         GConfig::get_instance().set_frames_per_buffer(argparser.get_arguement("-f")->get_arg_int());
     }
 
-    if (argparser.get_arguement("-g")->is_present()) {
-        printf("-g := %f\n", argparser.get_arguement("-g")->get_arg_float());
-    }
   
     GConfig::get_instance().print_config();
     GConfig::get_instance().check_config();
 
-    // auto sin_gen = Sine(1);
-    // auto frame   = Frame();
-
-    // sin_gen.filter(frame);
-
-    // for (int c = 0; c < GConfig::get_instance().get_num_channels(); c++)
-    // {
-    //     for (int s = 0; s < GConfig::get_instance().get_frames_per_buffer(); s++)
-    //     {
-    //         printf("%f ", frame(c,s));
-    //     }
-
-    //     printf("\n");
-    // }
 
     PaError err = Pa_Initialize();
     if (err != paNoError)
@@ -333,22 +317,31 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 
     KeyboardController kb_controller = KeyboardController();
-    // kb_controller.add_key_bind(VK_UP, std::bind(&Sine::hz_increase, &master_bus.sin));
-    // kb_controller.add_key_bind(VK_DOWN, std::bind(&Sine::hz_decrease, &master_bus.sin));
+    kb_controller.add_key_bind(VK_UP, std::bind(&KeyboardController::octave_shift_up, &kb_controller));
+    kb_controller.add_key_bind(VK_DOWN, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
     GControllers::get_instance().register_controller(kb_controller);
     
     GMidi::get_instance().activate_instrument(&master_bus.synth, "sine_synth");
+
+    unsigned poll_period_ms = 10;
+    if (argparser.get_arguement("-cpp")->is_present()) {
+        poll_period_ms = argparser.get_arguement("-cpp")->get_arg_int();
+    }
 
 #endif
 
     for (;;)
     {
 
+
+    // TODO: Make a MIDI File Reader
+
 #ifdef _WIN32
 
-    // Update all controllers every 50 ms
+    // TODO: Find a way to have this be delagte instead of polling. 
+    // Update all controllers every poll_period ms
     kb_controller.tick();
-    Sleep(50);
+    Sleep(poll_period_ms);
 
 #endif
 

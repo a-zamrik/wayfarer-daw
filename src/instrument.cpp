@@ -3,11 +3,12 @@
 #include "midi.h"
 
 
+#define START_MIDI_NOTE 21
+#define END_MIDI_NOTE 108
 
 SineSynth::SineSynth()
 {
-    // Generate notes A3 (57) to A4 (69)
-    for (unsigned n = 57; n <= 61; n++)
+    for (unsigned n = START_MIDI_NOTE; n <= END_MIDI_NOTE; n++)
     {
         printf("Sine @%f\n", GMidi::midi_note_to_freq(n));
         this->oscilators.push_back(Sine(GMidi::midi_note_to_freq(n)));
@@ -27,7 +28,7 @@ SineSynth::SineSynth()
 void
 SineSynth::handle_event(MidiEvent & event)
 {
-    unsigned index = event.get_note_num() - 57;
+    unsigned index = event.get_note_num() - START_MIDI_NOTE;
     if (index < this->oscilators.size())
     {
 
