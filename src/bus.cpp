@@ -6,6 +6,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include "loader/wave.h"
+
+
 int 
 MasterBus::paCallback( 
     const void *inputBuffer, void *outputBuffer,
@@ -33,16 +36,17 @@ MasterBus::paCallback(
     // Sin generotor populate frame
     MasterBus->synth.render(MasterBus->frame);
 
+    MasterBus->audio_track->fill_frame(MasterBus->frame);
+
     // Pass frame info to output 
     for (unsigned i = 0; i < framesPerBuffer; i++)
     {
         for (unsigned c = 0; c < n_channels; c++)
         {
             *out++ = MasterBus->gain * MasterBus->frame(c,i); 
+            MasterBus->frame(c,i) = 0; // clear frame
         }
     }
-
-    // TODO: Add limiter
 
 
 
@@ -88,6 +92,8 @@ MasterBus::init_stream()
         std::cerr << Pa_GetErrorText(err) << std::endl;
         critical_error_no_line_print("Failed to create audio stream");
     }
+
+    printf("Length of audio track:%zu\n", this->audio_track->n_samples());
 
     return;
 }

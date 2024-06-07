@@ -268,11 +268,19 @@ error:
 int main(int argc, char** argv);
 int main(int argc, char** argv)
 {
-    WaveFileLoader wave_loader = WaveFileLoader("C:\\Users\\Adam\\Music\\The Mamas & the Papas - California Dreamin'.wav");
+    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Crazy_Dave_Intro_Theme_128.wav");
 
 
-    exit(0);
-    
+    // for (int s = 0; s < audio_track->n_samples(); s++)
+    // {
+    //     for (int c = 0; c < 2; c++)
+    //     {
+    //         std::cout << audio_track->operator()(c, s) << std::endl;
+    //     }
+    // }
+
+    //  std::cout << audio_track->n_samples() << std::endl;
+
 
     // set up arguements
     ArgParser argparser = ArgParser();
@@ -316,6 +324,8 @@ int main(int argc, char** argv)
     }
 
     MasterBus master_bus = MasterBus().set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
+    
+    master_bus.audio_track = audio_track;
     master_bus.init_stream();
     master_bus.start_stream();
 

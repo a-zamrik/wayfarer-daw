@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <string>
 #include <fstream>
+#include <memory>
+#include <vector>
+#include "../audio_track.h"
 
 // Reference: http://soundfile.sapp.org/doc/WaveFormat/
 
@@ -44,14 +47,15 @@ struct WaveFileHeader
 class WaveFileLoader
 {
 private:
-    std::string file_path;
 
-    void print_header(WaveFileHeader & header);
-    void read_data(std::ifstream & wave_file, WaveFileHeader & wave_header);
+    static void print_header(WaveFileHeader & header);
+    
+    static void
+    read_data(std::ifstream & wave_file, WaveFileHeader & wave_header, std::vector<std::vector<float>> & );
     
     
 public:
-    WaveFileLoader(std::string _file_path);
+    static std::shared_ptr<AudioTrack> load(std::string _file_path);
     
 
 

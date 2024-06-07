@@ -4,7 +4,8 @@
 #include "oscillators.h"
 #include "instrument.h"
 #include "../include/portaudio.h"
-  
+#include "audio_track.h"
+
 class MasterBus
 {
 private:
@@ -29,6 +30,7 @@ public:
     // Place holder variables
     Frame      frame;
     SineSynth  synth;
+    std::shared_ptr<AudioTrack> audio_track;
 
     
     MasterBus() : frame(), synth(), gain(0.01f) {}
