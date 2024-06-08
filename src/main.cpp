@@ -462,8 +462,19 @@
 // This is because we need ImTextureID to carry a 64-bit value and by default ImTextureID is defined as void*.
 // This define is set in the example .vcxproj file and need to be replicated in your app or by adding it to your imconfig.h file.
 
+// Defined by CMAKE PREPROCESSING
+#ifdef USE_IMGUI
+
 #include "imgui.h"
-#include "imgui_impl_win32.h"
+
+// Defined by CMAKE PREPROCESSING
+#ifdef USE_IMGUI_WINDOWS
+    #include "imgui_impl_win32.h"
+#endif
+
+// Defined by CMAKE PREPROCESSING
+#ifdef USE_IMGUI_DX12
+
 #include "imgui_impl_dx12.h"
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -479,6 +490,7 @@
 #endif
 
 #include "imgui_internal.h"
+#include "imgui-knobs.h"
 
 struct FrameContext
 {
@@ -559,6 +571,12 @@ int main(int, char**)
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.0f);
     }
 
+    style.TabRounding = 2.f;
+    style.FrameRounding = 2.f;
+    style.GrabRounding = 2.f;
+    style.WindowRounding = 2.f;
+    style.PopupRounding = 2.f;
+
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX12_Init(g_pd3dDevice, NUM_FRAMES_IN_FLIGHT,
@@ -631,8 +649,7 @@ int main(int, char**)
             static int counter = 0;
 
             ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
-            printf("done = %d\n", show_hello_world);
-
+            
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
@@ -646,6 +663,14 @@ int main(int, char**)
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+            static float value = 0;
+
+            if (ImGuiKnobs::Knob("Volume", &value, -6.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
+                // value was changed
+                printf("volume = %f\n", value);
+
+            }
             ImGui::End();
         }
 
@@ -956,3 +981,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     return ::DefWindowProcW(hWnd, msg, wParam, lParam);
 }
+
+#endif // USE_IMGUI_DX12
+
+#else // USE_IMGUI
+#include <stdio.h>
+int main(int, char**)
+{
+    printf("GUI is not being used\n");
+
+    return 0;
+}
+
+#endif // USE_IMGUI
