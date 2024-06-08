@@ -273,14 +273,14 @@ int main(int argc, char** argv)
 {
 
 
-    while(WayfarerGUI::get_instance().update_gui())
-    {
-        Sleep(50);
-    }
-    WayfarerGUI::get_instance().cleanup();
+    // while(WayfarerGUI::get_instance().update_gui())
+    // {
+    //     Sleep(50);
+    // }
+    // WayfarerGUI::get_instance().cleanup();
         
 
-    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Crazy_Dave_Intro_Theme_128.wav");
+    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Who.wav");
 
     // set up arguements
     ArgParser argparser = ArgParser();
@@ -323,8 +323,9 @@ int main(int argc, char** argv)
         critical_error_no_line_print("Failed to initialize portaudio");
     }
 
+
     MasterBus master_bus = MasterBus().set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
-    
+
     master_bus.audio_track = audio_track;
     master_bus.init_stream();
     master_bus.start_stream();
@@ -336,7 +337,7 @@ int main(int argc, char** argv)
     kb_controller.add_key_bind(VK_MAP::Z, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
     GControllers::get_instance().register_controller(kb_controller);
     
-    GMidi::get_instance().activate_instrument(&master_bus.synth, "sine_synth");
+    GMidi::get_instance().activate_instrument(master_bus.synth, "sine_synth");
 
     unsigned poll_period_ms = 10;
     if (argparser.get_arguement("-cpp")->is_present()) {
@@ -345,7 +346,11 @@ int main(int argc, char** argv)
 
 #endif
 
-    for (;;)
+#ifdef USE_IMGUI
+    while(WayfarerGUI::get_instance().update_gui())
+#else
+    for(;;)
+#endif
     {
 
 
@@ -353,8 +358,6 @@ int main(int argc, char** argv)
 
 #ifdef _WIN32
 
-    // TODO: Find a way to have this be delagte instead of polling. 
-    // Update all controllers every poll_period ms
     kb_controller.tick();
     Sleep(poll_period_ms);
 
@@ -362,6 +365,11 @@ int main(int argc, char** argv)
 
 
     }
+
+
+#ifdef USE_IMGUI
+    WayfarerGUI::get_instance().cleanup();
+#endif
 
     return 0;
 }

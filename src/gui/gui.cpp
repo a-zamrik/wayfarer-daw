@@ -424,8 +424,30 @@ bool WayfarerGUI::update_gui()
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
+
             
+
+
+            ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
+
+            for (WayfarerGuiComp * c : this->gui_comps)
+            {
+                c->draw_gui();
+            }
+            
+            ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+            int selected = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                char label[128];
+                sprintf(label, "MyObject %d", i);
+                if (ImGui::Selectable(label, selected == i))
+                    selected = i;
+            }
+            ImGui::EndChild();
+            ImGui::SameLine();
+
+            ImGui::BeginChild("right pane", ImVec2(150, 0),  ImGuiChildFlags_ResizeX);
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
@@ -447,7 +469,12 @@ bool WayfarerGUI::update_gui()
                 printf("volume = %f\n", value);
 
             }
+            ImGui::EndChild();
             ImGui::End();
+
+
+            
+
         }
         done = !show_hello_world;
 

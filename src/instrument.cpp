@@ -6,8 +6,33 @@
 #define START_MIDI_NOTE 21
 #define END_MIDI_NOTE 108
 
+
+float
+linear_to_db(float float_pcm)
+{
+    float abs = std::abs(float_pcm);
+    if (abs <= 0)
+    {
+        return -144.0f; // -inf db essentially
+    }
+    else
+    {
+        return 20.0f * log10f(abs);
+    }
+}
+
+float
+db_to_linear(float float_db)
+{
+    return powf(10.0f, float_db / 20.0f);
+}
+    
+
 SineSynth::SineSynth()
 {
+
+    printf("CREATING SYNTH\n");
+
     for (unsigned n = START_MIDI_NOTE; n <= END_MIDI_NOTE; n++)
     {
         printf("Sine @%f\n", GMidi::midi_note_to_freq(n));
@@ -19,10 +44,10 @@ SineSynth::SineSynth()
         osc.turn_off();
     }
 
+
+
     
 }
-
-
 
 
 void
@@ -56,7 +81,7 @@ SineSynth::render(Frame & frame)
 
     for (int i = 0; i < frame_size; i++)
     {
-        float sample = this->get_next_sample();
+        float sample = this->get_next_sample() * this->gain_lin;
         for (int c = 0; c < channels; c++)
         {
             frame(c,i) = sample;
@@ -77,3 +102,20 @@ SineSynth::get_next_sample()
     }
     return out;
 }
+
+
+#ifdef USE_IMGUI
+#include "imgui.h"
+#include "imgui-knobs.h"
+
+void
+SineSynth::draw_gui()
+{
+    if (ImGuiKnobs::Knob("Gain", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
+        // value was changed
+
+        this->gain_lin = db_to_linear(this->gain_db);
+        printf("%f\n", this->gain_lin);
+    }
+}
+#endif

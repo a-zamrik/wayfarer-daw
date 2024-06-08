@@ -34,7 +34,7 @@ MasterBus::paCallback(
     MasterBus * MasterBus =  static_cast<class MasterBus*>(userData);
 
     // Sin generotor populate frame
-    MasterBus->synth.render(MasterBus->frame);
+    MasterBus->synth->render(MasterBus->frame);
 
     MasterBus->audio_track->fill_frame(MasterBus->frame);
 

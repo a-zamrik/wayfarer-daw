@@ -1,6 +1,16 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
+#include <vector>
+#include "../error.h"
+
+class WayfarerGuiComp
+{
+public:
+    virtual void draw_gui() {}
+};
+
+
 class WayfarerGUI
 {
 private:
@@ -12,6 +22,8 @@ private:
     bool done = false;
     bool show_hello_world = true;
 
+
+    std::vector<WayfarerGuiComp *> gui_comps;
 
 public:
     static WayfarerGUI& get_instance()
@@ -27,6 +39,17 @@ public:
     // returns false if we should shutdown
     bool update_gui();
     void cleanup();
+
+    void register_comp(WayfarerGuiComp * c)
+    {
+        if (c == nullptr)
+        {
+            critical_error("Gui Component passed as NULL\n");
+        }
+        gui_comps.push_back(c);
+    }
+
+
 };
 
 #endif // __GUI_H__
