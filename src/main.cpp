@@ -450,8 +450,6 @@
 
 
 
-
-
 // Dear ImGui: standalone example application for DirectX 12
 
 // Learn about Dear ImGui:
@@ -535,7 +533,7 @@ int main(int, char**)
     }
 
     // Show the window
-    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
+    ::ShowWindow(hwnd, SW_HIDE);
     ::UpdateWindow(hwnd);
 
     // Setup Dear ImGui context
@@ -544,11 +542,22 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    //io.ConfigViewportsNoAutoMerge = true;
+    //io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.0f);
+    }
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -580,6 +589,7 @@ int main(int, char**)
 
     // Main loop
     bool done = false;
+    bool show_hello_world = true;
     while (!done)
     {
         // Poll and handle messages (inputs, window resize, etc.)
@@ -590,9 +600,12 @@ int main(int, char**)
             ::TranslateMessage(&msg);
             ::DispatchMessage(&msg);
             if (msg.message == WM_QUIT)
+            {
                 done = true;
+                printf("Kill given\n");
+            }
         }
-        if (done)
+        if (done || !show_hello_world)
             break;
 
         // Handle window screen locked
@@ -613,11 +626,12 @@ int main(int, char**)
             ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        {
+        if (show_hello_world) {
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
+            printf("done = %d\n", show_hello_world);
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
@@ -638,7 +652,7 @@ int main(int, char**)
         // 3. Show another simple window.
         if (show_another_window)
         {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Begin("Another Window", nullptr);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
             ImGui::Text("Hello from another window!");
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
@@ -675,6 +689,13 @@ int main(int, char**)
 
         g_pd3dCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&g_pd3dCommandList);
 
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault(nullptr, (void*)g_pd3dCommandList);
+        }
+
         // Present
         HRESULT hr = g_pSwapChain->Present(1, 0);   // Present with vsync
         //HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
@@ -701,7 +722,6 @@ int main(int, char**)
 }
 
 // Helper functions
-
 bool CreateDeviceD3D(HWND hWnd)
 {
     // Setup swap chain

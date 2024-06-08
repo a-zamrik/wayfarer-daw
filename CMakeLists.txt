@@ -14,7 +14,9 @@ include_directories(imgui/backends)
 
 # These instructions search the directory tree when cmake is
 # invoked and put all files that match the pattern in the variables 
+
 file(GLOB_RECURSE sources src/*.cpp src/*.h imgui/*.cpp imgui/*.h)
+
 
 # Specify a executable from the found source files
 add_executable(${TARGET_NAME} ${sources})
