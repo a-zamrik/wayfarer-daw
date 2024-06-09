@@ -27,3 +27,8 @@ db_to_linear(float float_db)
 }
     
 
+float 
+logspace(float start, float stop, int n, int N)
+{
+    return start * pow(stop/start, n/(float)(N-1));
+}

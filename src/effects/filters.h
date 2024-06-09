@@ -3,10 +3,12 @@
 
 #include "../error.h"
 #include <stdio.h>
+#include "../gui/gui.h"
 
 /*  References:
     https://arachnoid.com/BiQuadDesigner/index.html
     https://shepazu.github.io/Audio-EQ-Cookbook/audio-eq-cookbook.html
+    https://en.wikipedia.org/wiki/Digital_biquad_filter
 
 */
 
@@ -14,7 +16,7 @@
 class Frame;
 
 
-class BiQuadFilter
+class BiQuadFilter : public WayfarerGuiComp
 {
 
 protected:
@@ -29,8 +31,23 @@ protected:
     float q;
     float center_freq;
 
+    // Param checks
+    float max_freq;
+    float min_freq = 20.f;
+
     // Abstract func, children need to implement
     virtual void __recalculate_coefficients() { critical_error("Not Implemented"); }
+
+    // calculate frequency domain value at the given freq
+    float __freq_domain_at(float freq);
+
+    // Populate a preq table given the max_freq
+    void __populate_freq_domain_table(float *array, uint32_t count);
+
+#ifdef USE_IMGUI
+    float __freq_response_table[40];
+    virtual void draw_gui();
+#endif
 
 public:
 
@@ -48,6 +65,8 @@ public:
         this->q = _q; 
         this->center_freq = _center_freq; 
         this->__recalculate_coefficients();
+        this->__populate_freq_domain_table(this->__freq_response_table, (uint32_t) std::size(this->__freq_response_table));
+
     }
 
 };
@@ -59,13 +78,9 @@ protected:
     virtual void __recalculate_coefficients();
     
 public:
-    LowpassFilter()
+    LowpassFilter(float _q, float _center_freq)
     {
-        a1 = -1.96297470f;
-        a2 = 0.96364759f;
-        b0 = 1.68223247e-4f;
-        b1 = 3.36446494e-4f;
-        b2 = 1.68223247e-4f;
+        this->set_params(_q, _center_freq);
     }
 
 };
