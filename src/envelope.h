@@ -48,7 +48,6 @@ protected:
 public:
     Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a);
 
-
     void reset() {this->step = 0;}
 
     float step_ads();
@@ -59,6 +58,8 @@ public:
 
     void set_atk_amp(float amp) {this->attack_amp  = amp;}
     void set_sus_amp(float amp) {this->sustain_amp = amp;}
+
+    void set_env(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a);
 
 
     // void to_float_array(float * array, uint32_t count);

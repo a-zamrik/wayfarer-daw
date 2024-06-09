@@ -43,7 +43,12 @@ RollingAverage::add_sample(float s)
 
 Envelope::Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a)
 {
+    set_env( atk_t, atk_a,  dec_t,  rel_t,  sus_a);
+}
 
+void
+Envelope::set_env(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a)
+{
     this->attack_time = atk_t;
     this->decay_time = dec_t;
     this->release_time = rel_t;

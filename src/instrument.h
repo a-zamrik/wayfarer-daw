@@ -33,6 +33,14 @@ class SineSynth : public Instrument, public WayfarerGuiComp
         float gain_db  = 0.0;
 
 
+        float attack_amp  = 1.0f;
+        float sustain_amp = 0.5f;
+
+        float attack_time = 0.01f;
+        float decay_time  = 0.01f;
+        float release_time = 2.0f;
+
+        void update_adsr();
 
     public:
         SineSynth();

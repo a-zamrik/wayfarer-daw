@@ -83,6 +83,15 @@ SineSynth::get_next_sample()
     return out;
 }
 
+void
+SineSynth::update_adsr()
+{
+    for (Sine & osc : this->oscilators)
+    {
+        osc.adsr_env.set_env(attack_time, attack_amp, decay_time, release_time, sustain_amp);
+    }
+}
+
 
 #ifdef USE_IMGUI
 #include "imgui.h"
@@ -99,15 +108,32 @@ SineSynth::draw_gui()
 
     // TODO: add ADSR editor
     ImGui::BeginChild("##ADSR", ImVec2(500, 150), 0);
+        bool update_adsr = false;
         ImGui::PlotLines("", plot_values, IM_ARRAYSIZE(plot_values), 0, "ADSR", 0, 1.0f, ImVec2(500, 50.0f));
-        if (ImGuiKnobs::Knob("Atk", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
-            this->gain_lin = db_to_linear(this->gain_db);
+        if (ImGuiKnobs::Knob("Atk", &this->attack_time, -0, 20.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 35.0f)) {
+            update_adsr = true;
         }
         ImGui::SameLine();
-        if (ImGuiKnobs::Knob("Sus", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
-            this->gain_lin = db_to_linear(this->gain_db);
+        if (ImGuiKnobs::Knob("Dec", &this->decay_time, 0, 20.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 35.0f)) {
+            update_adsr = true;
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::Knob("A A", &this->attack_amp, 0.0f, 1.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 35.0f)) {
+            update_adsr = true;
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::Knob("S A", &this->sustain_amp, 0.0f, 1.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 35.0f)) {
+            update_adsr = true;
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::Knob("Rel", &this->release_time, 0.0f, 20.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 35.0f)) {
+            update_adsr = true;
         }
 
+        if (update_adsr)
+        {
+            this->update_adsr();
+        }
     ImGui::EndChild();
 
     // Draw seprator
