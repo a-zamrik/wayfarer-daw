@@ -57,6 +57,12 @@ public:
     // Envlope has finished; this->step is at end of envelope, need to call reset()
     bool is_done();
 
+    void set_atk_amp(float amp) {this->attack_amp  = amp;}
+    void set_sus_amp(float amp) {this->sustain_amp = amp;}
+
+
+    // void to_float_array(float * array, uint32_t count);
+
 };
 
 #endif

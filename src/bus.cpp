@@ -36,7 +36,7 @@ MasterBus::paCallback(
     // Sin generotor populate frame
     MasterBus->synth->render(MasterBus->frame);
 
-    MasterBus->audio_track->fill_frame(MasterBus->frame);
+    //MasterBus->audio_track->fill_frame(MasterBus->frame);
 
     // Pass frame info to output 
     for (unsigned i = 0; i < framesPerBuffer; i++)

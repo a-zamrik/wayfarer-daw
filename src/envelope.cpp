@@ -124,3 +124,14 @@ Envelope::is_done()
 {
     return this->step >= (this->attack_n_samples + this->decay_n_samples + this->release_n_samples);
 }
+
+// void
+// Envelope::to_float_array(float * array, uint32_t count)
+// {
+//     if (array == nullptr)
+//     {
+//         critical_error("Array was passed in as NULL\n");
+//     }
+
+
+// }

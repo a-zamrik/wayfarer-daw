@@ -319,7 +319,7 @@ void init()
     }
 
     // Show the window
-    ::ShowWindow(hwnd, SW_HIDE);
+    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
 
     // Setup Dear ImGui context
@@ -345,11 +345,14 @@ void init()
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.0f);
     }
 
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(12.f / 255.f, 0.f / 255.f, 64.f / 255.f, 255.f / 255.f);
+
     style.TabRounding = 2.f;
     style.FrameRounding = 2.f;
     style.GrabRounding = 2.f;
     style.WindowRounding = 2.f;
     style.PopupRounding = 2.f;
+    style.ChildRounding = 2.f;
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -472,7 +475,14 @@ bool WayfarerGUI::update_gui()
             ImGui::EndChild();
             ImGui::End();
 
+            ImGui::Begin("Instrument Chain", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
 
+            for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
+            {
+                c->draw_gui();
+            }
+
+            ImGui::End();
             
 
         }

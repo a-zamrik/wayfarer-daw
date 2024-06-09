@@ -91,9 +91,41 @@ SineSynth::get_next_sample()
 void
 SineSynth::draw_gui()
 {
+    float plot_values[] = { 0.0f, 1.0f, 0.5f, 0.5, 0.25, 0.0f};
+
+    //ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(12, 0, 64, 255));
+
     ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Sine Synth");
-    if (ImGuiKnobs::Knob("Gain", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
+
+    // TODO: add ADSR editor
+    ImGui::BeginChild("##ADSR", ImVec2(500, 150), 0);
+        ImGui::PlotLines("", plot_values, IM_ARRAYSIZE(plot_values), 0, "ADSR", 0, 1.0f, ImVec2(500, 50.0f));
+        if (ImGuiKnobs::Knob("Atk", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
+            this->gain_lin = db_to_linear(this->gain_db);
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::Knob("Sus", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
+            this->gain_lin = db_to_linear(this->gain_db);
+        }
+
+    ImGui::EndChild();
+
+    // Draw seprator
+    ImGui::SameLine();
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(2, 0));
+    ImGui::SameLine();
+
+    // Draw Output section
+    ImGui::BeginChild("##Gain", ImVec2(35, 150), 0);
+    if (ImGuiKnobs::Knob("Gain", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper, 35.0f)) {
         this->gain_lin = db_to_linear(this->gain_db);
     }
+    ImGui::EndChild();
+
+    //ImGui::PopStyleColor();
+
 }
 #endif
