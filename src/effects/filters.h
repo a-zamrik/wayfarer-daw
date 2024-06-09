@@ -46,7 +46,7 @@ protected:
 
 #ifdef USE_IMGUI
     float __freq_response_table[40];
-    virtual void draw_gui();
+    virtual void draw_gui() { critical_error ("Not Implemented");}
 #endif
 
 public:
@@ -71,14 +71,33 @@ public:
 
 };
 
-class LowpassFilter : public BiQuadFilter
+class AutoFilter : public BiQuadFilter
 {
+private:
+    enum FilterType {
+        HighPass,
+        LowPass,
+        BandPass,
+        Notch
+    };
+
+    FilterType filter_type = FilterType::LowPass;
+
+    void __normalize_coefficients();
+
+    void __make_lowpass();
+    void __make_highpass();
+    void __make_bandpass();
+    void __make_notch();
 
 protected:
     virtual void __recalculate_coefficients();
+#ifdef USE_IMGUI
+    virtual void draw_gui();
+#endif
     
 public:
-    LowpassFilter(float _q, float _center_freq)
+    AutoFilter(float _q, float _center_freq)
     {
         this->set_params(_q, _center_freq);
     }

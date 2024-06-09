@@ -36,12 +36,12 @@ public:
     std::shared_ptr<SineSynth>  synth; // Dangerous to expose
     std::shared_ptr<AudioTrack> audio_track;
 
-    std::shared_ptr<LowpassFilter> lowpass_filter;
+    std::shared_ptr<AutoFilter> lowpass_filter;
 
     
     MasterBus() : frame(), gain(0.01f) { 
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
-        lowpass_filter = std::shared_ptr<LowpassFilter> (new LowpassFilter(0.707f, 500.f)); 
+        lowpass_filter = std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)); 
         WayfarerGUI::get_instance().register_comp(this->synth);
         WayfarerGUI::get_instance().register_comp(this->lowpass_filter);
 

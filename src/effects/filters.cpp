@@ -57,7 +57,7 @@ BiQuadFilter::__populate_freq_domain_table(float *array, uint32_t count)
 }
 
 void
-LowpassFilter::__recalculate_coefficients()
+AutoFilter::__make_lowpass()
 {
     auto sample_rate = GConfig::get_instance().get_sample_rate();
 
@@ -76,6 +76,76 @@ LowpassFilter::__recalculate_coefficients()
     this->a1 = -2.0f * cos(omega);
     this->a2 = 1.0f - alpha;
 
+    this->__normalize_coefficients();
+}
+
+void
+AutoFilter::__make_highpass()
+{
+    auto sample_rate = GConfig::get_instance().get_sample_rate();
+
+    this->max_freq = (sample_rate - 100.0f) / 2.0f;
+
+    float omega = TWO_PI_F * this->center_freq / sample_rate;
+    float alpha = sin(omega) / (2.0f * this->q);
+    
+    this->b0 = (1.0f + cos(omega)) / 2.0f;
+    this->b1 = -(1.0f + cos(omega));
+    this->b2 = (1.0f + cos(omega)) / 2.0f;
+
+    this->a0 = 1.0f + alpha;
+    this->a1 = -2.0f * cos(omega);
+    this->a2 = 1.0f - alpha;
+
+    this->__normalize_coefficients();
+}
+
+void
+AutoFilter::__make_bandpass()
+{
+    auto sample_rate = GConfig::get_instance().get_sample_rate();
+
+    this->max_freq = (sample_rate - 100.0f) / 2.0f;
+
+    float omega = TWO_PI_F * this->center_freq / sample_rate;
+    float alpha = sin(omega) / (2.0f * this->q);
+    
+    this->b0 = alpha;
+    this->b1 = 0.f;
+    this->b2 = -alpha;
+
+    this->a0 = 1.0f + alpha;
+    this->a1 = -2.0f * cos(omega);
+    this->a2 = 1.0f - alpha;
+
+    this->__normalize_coefficients();
+}
+
+void
+AutoFilter::__make_notch()
+{
+    auto sample_rate = GConfig::get_instance().get_sample_rate();
+
+    this->max_freq = (sample_rate - 100.0f) / 2.0f;
+
+    float omega = TWO_PI_F * this->center_freq / sample_rate;
+    float alpha = sin(omega) / (2.0f * this->q);
+    
+    this->b0 = 1.f;
+    this->b1 = -2.0f * cos(omega);
+    this->b2 = 1.f;
+
+    this->a0 = 1.0f + alpha;
+    this->a1 = -2.0f * cos(omega);
+    this->a2 = 1.0f - alpha;
+
+    this->__normalize_coefficients();
+}
+
+
+void
+AutoFilter::__normalize_coefficients()
+{
     // For optimization, we can normalize a0 to be equal to 1
     // afterwhich, a division by 1, has no effect on result.
     this->b0 /= this->a0;
@@ -83,6 +153,28 @@ LowpassFilter::__recalculate_coefficients()
     this->b2 /= this->a0;
     this->a1 /= this->a0;
     this->a2 /= this->a0;
+}
+
+void
+AutoFilter::__recalculate_coefficients()
+{
+    switch (this->filter_type)
+    {
+        case FilterType::LowPass:
+            this->__make_lowpass();
+            break;
+        case FilterType::HighPass:
+            this->__make_highpass();
+            break;
+        case FilterType::BandPass:
+            this->__make_bandpass();
+            break;
+        case FilterType::Notch:
+            this->__make_notch();
+            break;
+        default:
+            critical_error("Some how the filter type was not known\n");
+    }
 
 
     // std::cout << "b0:" << b0 << std::endl
@@ -90,7 +182,6 @@ LowpassFilter::__recalculate_coefficients()
     //           << "b2:" << b2 << std::endl
     //           << "a1:" << a1 << std::endl
     //           << "a2:" << a2 << std::endl;
-
 }
 
 
@@ -100,16 +191,47 @@ LowpassFilter::__recalculate_coefficients()
 
 
 void
-BiQuadFilter::draw_gui()
+AutoFilter::draw_gui()
 {
-    ImGui::BeginChild("##Freq", ImVec2(175, 135), 0);
-    ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "Freq", 0, 5.0f, ImVec2(135, 135.0f));
-    
+    bool update_params = false;
+    ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
+
+    ImGui::BeginChild("##Filter", ImVec2(175, 135), 0);
+
+    ImGui::BeginChild("##Freq", ImVec2(135, 135), 0);
+    ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "f-domian", 0, 5.0f, ImVec2(135, 110.0f));
+
+    ImGui::Dummy(ImVec2(3, 0));
+    ImGui::SameLine();
+    if (ImGui::Button("LO"))
+    {
+        this->filter_type = FilterType::LowPass;
+        update_params = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("HI"))
+    {
+        this->filter_type = FilterType::HighPass;
+        update_params = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("BA"))
+    {
+        this->filter_type = FilterType::BandPass;
+        update_params = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("NO"))
+    {
+        this->filter_type = FilterType::Notch;
+        update_params = true;
+    }
+    ImGui::EndChild();
 
     ImGui::SameLine();
 
     ImGui::BeginChild("##FQ", ImVec2(25, 135), 0);
-    bool update_params = false;
+
     if (ImGuiKnobs::Knob("Q", &this->q, 0.01f, 10.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
         update_params = true;
     }
@@ -118,8 +240,8 @@ BiQuadFilter::draw_gui()
     }
     ImGui::EndChild();
     
-ImGui::EndChild();
-
+    ImGui::EndChild();
+    
     if (update_params) 
     {
         this->__recalculate_coefficients();
