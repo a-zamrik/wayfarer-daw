@@ -5,6 +5,7 @@
 #include "instrument.h"
 #include "../include/portaudio.h"
 #include "audio_track.h"
+#include "effects/filters.h"
 
 class MasterBus
 {
@@ -34,6 +35,8 @@ public:
     // TODO: MAKE A SHARED POINTER
     std::shared_ptr<SineSynth>  synth; // Dangerous to expose
     std::shared_ptr<AudioTrack> audio_track;
+
+    LowpassFilter lowpass_filter;
 
     
     MasterBus() : frame(), gain(0.01f) { 

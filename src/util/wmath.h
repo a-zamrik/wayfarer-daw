@@ -1,6 +1,9 @@
 #ifndef _WMATH_H_
 #define _WMATH_H_
 
+#define PI_F (3.14159265359f)
+#define TWO_PI_F (6.28318530718f)
+
 /*  Linear Interpolation
     t = 0 -> returns a
     t = 1 -> returns b
