@@ -114,7 +114,7 @@ WaveFileLoader::load(std::string _file_path) {
 
     wave_file.close();
 
-    return std::shared_ptr<AudioTrack>(new AudioTrack(data));
+    return std::shared_ptr<AudioTrack>(new AudioTrack(data, header.SampleRate));
 }
 
 void

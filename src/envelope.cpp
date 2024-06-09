@@ -2,12 +2,7 @@
 #include "global_config.h"
 #include "error.h"
 #include <cmath>
-
-
-float 
-lerp(float a, float b, float t) {
-  return (1 - t) * a + t * b;
-}
+#include "./util/wmath.h"
 
 
 RollingAverage::RollingAverage(float time_window_s)

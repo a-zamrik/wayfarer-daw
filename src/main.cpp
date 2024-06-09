@@ -272,16 +272,8 @@ int main(int argc, char** argv);
 int main(int argc, char** argv)
 {
 
-
-    // while(WayfarerGUI::get_instance().update_gui())
-    // {
-    //     Sleep(50);
-    // }
-    // WayfarerGUI::get_instance().cleanup();
-        
-
     std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Who.wav");
-
+    
     // set up arguements
     ArgParser argparser = ArgParser();
     argparser.add_arguement("-d", "--devices", 0, "List all audio devices availble");
@@ -316,6 +308,7 @@ int main(int argc, char** argv)
     GConfig::get_instance().print_config();
     GConfig::get_instance().check_config();
 
+    audio_track->target_sample_rate(GConfig::get_instance().get_sample_rate());
 
     PaError err = Pa_Initialize();
     if (err != paNoError)

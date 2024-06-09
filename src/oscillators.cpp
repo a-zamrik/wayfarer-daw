@@ -81,7 +81,7 @@ Sine::get_next_sample()
     // TODO: NEED OT PREVENT OVERFLOW?
     this->t++;
 
-    env_val = env_rolling_avg.add_sample(env_val);
+    env_val = this->adsr_env_rolling_avg.add_sample(env_val);
 
     return next_sample * env_val;
 }
