@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "../error.h"
+#include <memory>
 
 class WayfarerGuiComp
 {
@@ -23,7 +24,7 @@ private:
     bool show_hello_world = true;
 
 
-    std::vector<WayfarerGuiComp *> gui_comps;
+    std::vector<std::shared_ptr<WayfarerGuiComp>> gui_comps;
 
 public:
     static WayfarerGUI& get_instance()
@@ -40,7 +41,7 @@ public:
     bool update_gui();
     void cleanup();
 
-    void register_comp(WayfarerGuiComp * c)
+    void register_comp(std::shared_ptr<WayfarerGuiComp> c)
     {
         if (c == nullptr)
         {

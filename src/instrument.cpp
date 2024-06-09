@@ -111,11 +111,9 @@ SineSynth::get_next_sample()
 void
 SineSynth::draw_gui()
 {
+    ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Sine Synth");
     if (ImGuiKnobs::Knob("Gain", &this->gain_db, -60.0f, 6.0f, 0.1f, "%.1fdB", ImGuiKnobVariant_Wiper)) {
-        // value was changed
-
         this->gain_lin = db_to_linear(this->gain_db);
-        printf("%f\n", this->gain_lin);
     }
 }
 #endif

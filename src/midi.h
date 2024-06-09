@@ -36,7 +36,7 @@ class GMidi
         GMidi() {}                        // Constructor? (the {} brackets) are needed here.
 
 
-        std::unordered_map<std::string, SineSynth *> active_instruments;
+        std::unordered_map<std::string, std::shared_ptr<SineSynth>> active_instruments;
 
     public:
         static GMidi& get_instance()
@@ -54,7 +54,7 @@ class GMidi
 
         void create_event(unsigned note_num, bool is_pressed);
 
-        void activate_instrument(SineSynth *  i, std::string name);
+        void activate_instrument(std::shared_ptr<SineSynth>  i, std::string name);
 
 };
 

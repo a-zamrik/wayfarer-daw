@@ -4,6 +4,24 @@
 #include <vector>
 #include <memory>
 
+
+class RollingAverage
+{
+    std::vector<float> circ_buff;
+    int c_buff_index; // Will point to the last added sample, just before adding
+    float avg;
+
+public:
+
+    RollingAverage(float time_window_s);
+
+    // Returns the average after adding the new sample s
+    float add_sample(float s);
+    inline float get_avg() const {return this->avg;}
+};
+
+
+
 class Envelope
 {
 

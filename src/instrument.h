@@ -33,6 +33,7 @@ class SineSynth : public Instrument, public WayfarerGuiComp
         float gain_db  = 0.0;
 
 
+
     public:
         SineSynth();
         virtual void handle_event(MidiEvent & event);    

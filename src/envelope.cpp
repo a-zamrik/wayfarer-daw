@@ -1,11 +1,49 @@
 #include "envelope.h"
 #include "global_config.h"
+#include "error.h"
 #include <cmath>
 
 
 float 
 lerp(float a, float b, float t) {
   return (1 - t) * a + t * b;
+}
+
+
+RollingAverage::RollingAverage(float time_window_s)
+{
+    uint32_t buff_size = (uint32_t) (GConfig::get_instance().get_sample_rate() * time_window_s);
+
+    if (buff_size == 0)
+    {
+        critical_error("RollingAvage circular buffer size is zero. time_window too small\n");
+    }
+    
+    for (uint32_t i = 0; i < buff_size; i++)
+    {
+        this->circ_buff.push_back(0);
+    }
+
+    this->c_buff_index = 0;
+    this->avg = 0;
+}
+
+float 
+RollingAverage::add_sample(float s)
+{
+    float avg_without_last = (this->avg * ((float) this->circ_buff.size())) - this->circ_buff[this->c_buff_index];
+
+    this->avg =  (avg_without_last + s) / this->circ_buff.size();
+
+    this->circ_buff[this->c_buff_index] = s;
+
+    this->c_buff_index++;
+    if (this->c_buff_index >= this->circ_buff.size())
+    {
+        this->c_buff_index = 0;
+    }
+
+    return this->avg;
 }
 
 Envelope::Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a)

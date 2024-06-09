@@ -29,12 +29,15 @@ private:
 public:
     // Place holder variables
     Frame      frame;
-    SineSynth*  synth; // Dangerous to expose
+
+
+    // TODO: MAKE A SHARED POINTER
+    std::shared_ptr<SineSynth>  synth; // Dangerous to expose
     std::shared_ptr<AudioTrack> audio_track;
 
     
     MasterBus() : frame(), gain(0.01f) { 
-        synth = new SineSynth(); 
+        synth = std::shared_ptr<SineSynth> (new SineSynth()); 
         WayfarerGUI::get_instance().register_comp(this->synth);
     }
 

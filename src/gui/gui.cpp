@@ -430,7 +430,7 @@ bool WayfarerGUI::update_gui()
 
             ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
 
-            for (WayfarerGuiComp * c : this->gui_comps)
+            for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
             {
                 c->draw_gui();
             }

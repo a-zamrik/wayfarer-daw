@@ -22,7 +22,7 @@ GMidi::create_event(unsigned note_num, bool is_pressed)
 }
 
 void 
-GMidi::activate_instrument(SineSynth  * i, std::string name)
+GMidi::activate_instrument(std::shared_ptr<SineSynth> i, std::string name)
 {
     this->active_instruments[name] = i;
 }
