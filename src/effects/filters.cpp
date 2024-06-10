@@ -5,6 +5,8 @@
 #include <cmath>
 #include <iostream>
 
+uint32_t AutoFilter::instance_count = 0;
+
 void
 BiQuadFilter::filter_frame(Frame & frame)
 {
@@ -59,6 +61,11 @@ BiQuadFilter::__populate_freq_domain_table(float *array, uint32_t count)
 void
 AutoFilter::__make_lowpass()
 {
+    // TODO:
+    // sample_rate, max_freq, omega, and alpha are duplicate code
+    // for all types of filters, could calculate before calling the
+    // __make_xxxxx() functions
+    
     auto sample_rate = GConfig::get_instance().get_sample_rate();
 
     this->max_freq = (sample_rate - 100.0f) / 2.0f;
@@ -194,54 +201,58 @@ void
 AutoFilter::draw_gui()
 {
     bool update_params = false;
-    ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
 
-    ImGui::BeginChild("##Filter", ImVec2(175, 135), 0);
-
-    ImGui::BeginChild("##Freq", ImVec2(135, 135), 0);
-    ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "f-domian", 0, 5.0f, ImVec2(135, 110.0f));
-
-    ImGui::Dummy(ImVec2(3, 0));
-    ImGui::SameLine();
-    if (ImGui::Button("LO"))
-    {
-        this->filter_type = FilterType::LowPass;
-        update_params = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("HI"))
-    {
-        this->filter_type = FilterType::HighPass;
-        update_params = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("BA"))
-    {
-        this->filter_type = FilterType::BandPass;
-        update_params = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("NO"))
-    {
-        this->filter_type = FilterType::Notch;
-        update_params = true;
-    }
-    ImGui::EndChild();
-
-    ImGui::SameLine();
-
-    ImGui::BeginChild("##FQ", ImVec2(25, 135), 0);
-
-    if (ImGuiKnobs::Knob("Q", &this->q, 0.01f, 10.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
-        update_params = true;
-    }
-    if (ImGuiKnobs::Knob("F", &this->center_freq, this->min_freq, this->max_freq, 100.0f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
-        update_params = true;
-    }
-    ImGui::EndChild();
+    ImGui::PushID(this->instance_id);
     
+
+    ImGui::BeginChild("Filter", ImVec2(175, 155), 0);
+        ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
+
+        ImGui::BeginChild("Filter Graph", ImVec2(135, 135), 0);
+            ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "f-domian", 0, 5.0f, ImVec2(135, 110.0f));
+
+            ImGui::Dummy(ImVec2(3, 0));
+            ImGui::SameLine();
+            if (ImGui::Button("LO"))
+            {
+                this->filter_type = FilterType::LowPass;
+                update_params = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("HI"))
+            {
+                this->filter_type = FilterType::HighPass;
+                update_params = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("BA"))
+            {
+                this->filter_type = FilterType::BandPass;
+                update_params = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("NO"))
+            {
+                this->filter_type = FilterType::Notch;
+                update_params = true;
+            }
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        ImGui::BeginChild("FQ", ImVec2(25, 135), 0);
+
+            if (ImGuiKnobs::Knob("Q", &this->q, 0.01f, 10.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
+                update_params = true;
+            }
+            if (ImGuiKnobs::Knob("F", &this->center_freq, this->min_freq, this->max_freq, 100.0f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
+                update_params = true;
+            }
+        ImGui::EndChild();
+        
     ImGui::EndChild();
-    
+
+    ImGui::PopID();
     if (update_params) 
     {
         this->__recalculate_coefficients();

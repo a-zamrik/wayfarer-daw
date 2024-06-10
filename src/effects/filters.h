@@ -90,6 +90,9 @@ private:
     void __make_bandpass();
     void __make_notch();
 
+    uint32_t instance_id;
+    static uint32_t instance_count;
+
 protected:
     virtual void __recalculate_coefficients();
 #ifdef USE_IMGUI
@@ -99,6 +102,7 @@ protected:
 public:
     AutoFilter(float _q, float _center_freq)
     {
+        instance_id = AutoFilter::instance_count++;
         this->set_params(_q, _center_freq);
     }
 

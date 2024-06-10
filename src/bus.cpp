@@ -38,7 +38,10 @@ MasterBus::paCallback(
 
     MasterBus->audio_track->fill_frame(MasterBus->frame);
 
-    MasterBus->lowpass_filter->filter_frame(MasterBus->frame);
+    for (auto e : MasterBus->effects)
+    {
+        e->filter_frame(MasterBus->frame);
+    }
 
     // Pass frame info to output 
     for (unsigned i = 0; i < framesPerBuffer; i++)

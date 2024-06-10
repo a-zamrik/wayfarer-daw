@@ -435,7 +435,10 @@ bool WayfarerGUI::update_gui()
 
             for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
             {
+                ImGui::SameLine();
+ 
                 c->draw_gui();
+
             }
             
             ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
@@ -479,6 +482,15 @@ bool WayfarerGUI::update_gui()
 
             for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
             {
+                ImGui::SameLine();
+                {   // Draw line seperator
+                    ImGui::SameLine();
+                    ImVec2 p = ImGui::GetCursorScreenPos();
+                    ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
+                    ImGui::SameLine();
+                    ImGui::Dummy(ImVec2(2, 0));
+                    ImGui::SameLine();
+                }
                 c->draw_gui();
             }
 

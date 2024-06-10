@@ -7,6 +7,7 @@
 #include "audio_track.h"
 #include "effects/filters.h"
 
+
 class MasterBus
 {
 private:
@@ -32,19 +33,20 @@ public:
     Frame      frame;
 
 
-    // TODO: MAKE A SHARED POINTER
-    std::shared_ptr<SineSynth>  synth; // Dangerous to expose
+    
+    std::shared_ptr<SineSynth>  synth; 
     std::shared_ptr<AudioTrack> audio_track;
 
-    std::shared_ptr<AutoFilter> lowpass_filter;
+    std::vector<std::shared_ptr<AutoFilter>> effects;
 
     
     MasterBus() : frame(), gain(0.01f) { 
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
-        lowpass_filter = std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)); 
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
         WayfarerGUI::get_instance().register_comp(this->synth);
-        WayfarerGUI::get_instance().register_comp(this->lowpass_filter);
-
+        WayfarerGUI::get_instance().register_comp(this->effects[0]);
+        WayfarerGUI::get_instance().register_comp(this->effects[1]);
     }
 
     // ~MasterBus()  { 
