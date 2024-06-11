@@ -104,6 +104,8 @@ SineSynth::draw_gui()
 
     //ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(12, 0, 64, 255));
 
+    // TODO: need to us pushID and use instance IDs
+
     ImGui::BeginChild("SinInstrument", ImVec2(575, 155), 0, ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
         ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Sine Synth");
 

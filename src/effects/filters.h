@@ -44,8 +44,9 @@ protected:
     // Populate a preq table given the max_freq
     void __populate_freq_domain_table(float *array, uint32_t count);
 
-#ifdef USE_IMGUI
+
     float __freq_response_table[40];
+#ifdef USE_IMGUI
     virtual void draw_gui() { critical_error ("Not Implemented");}
 #endif
 
@@ -94,6 +95,9 @@ private:
     static uint32_t instance_count;
 
 protected:
+
+    
+
     virtual void __recalculate_coefficients();
 #ifdef USE_IMGUI
     virtual void draw_gui();
@@ -107,5 +111,6 @@ public:
     }
 
 };
+
 
 #endif

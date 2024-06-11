@@ -479,7 +479,6 @@ bool WayfarerGUI::update_gui()
             ImGui::End();
 
             ImGui::Begin("Instrument Chain", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
-
             for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
             {
                 ImGui::SameLine();
@@ -493,9 +492,92 @@ bool WayfarerGUI::update_gui()
                 }
                 c->draw_gui();
             }
-
             ImGui::End();
+
+
+
+            ImGui::SetNextWindowSizeConstraints(ImVec2(175.f, 300.f), ImVec2(350.f, 10000.f));
+            ImGui::Begin("Explorer", &show_hello_world);
+
+            static int selected_tab = 0;
+
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.f, 0.f));
+            ImGui::BeginGroup();
+            ImGui::BeginChild("TabButtons", ImVec2(37.f, 0.f),0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+            {
+                ImGui::SameLine();
             
+                if(ImGui::BeginTable("TabButtonsTable", 1, 0, ImVec2(32.f, 32.f)))
+                {
+                    
+                    for (int i = 0; i < 3; i++)
+                    {
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::PushID(i);
+
+                        bool selected = selected_tab == i;
+                        if (selected)
+                        {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_ChildBg]);
+                            ImGui::PushStyleColor(ImGuiCol_Border, ImGui::GetStyle().Colors[ImGuiCol_ChildBg]);
+                        }
+                        else
+                        {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+                            ImGui::PushStyleColor(ImGuiCol_Border, ImGui::GetStyle().Colors[ImGuiCol_Border]);
+                        }
+                        if (ImGui::Button("tab", ImVec2(32.f, 32.f)))
+                        {
+                            selected_tab = i;
+                        }
+                        ImGui::PopStyleColor(2);
+                        ImGui::PopID();
+                    }
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+            }
+
+            ImGui::SameLine();
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 80.f));
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.f);
+            ImGui::BeginGroup();
+
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyle().Colors[ImGuiCol_ChildBg]);
+            ImGui::PushStyleColor(ImGuiCol_Border, ImGui::GetStyle().Colors[ImGuiCol_ChildBg]);
+            ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x - 8.f, ImGui::GetCursorPos().y + 2.f));
+            ImGui::BeginChild("Tab Content", ImVec2(300.f, 0));
+            {
+                ImGui::PopStyleColor(2);
+                switch (selected_tab)
+                {
+                    case 0:
+                        ImGui::Text("Tab 0");
+                        break;
+                    case 1:
+                        ImGui::Text("Tab 1");
+                        break;
+                    case 2:
+                        ImGui::Text("Tab 2");
+                        break;
+                    default:
+                        ImGui::Text("V O I D");
+
+                }
+                ImGui::EndChild();
+            }
+
+
+
+            ImGui::PopStyleVar();
+            ImGui::PopStyleVar();
+            ImGui::EndGroup();
+            ImGui::PopStyleVar();
+            ImGui::EndGroup();
+            ImGui::End();
+
 
         }
         done = !show_hello_world;

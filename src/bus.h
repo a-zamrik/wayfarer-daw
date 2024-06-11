@@ -44,9 +44,12 @@ public:
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
+
+#ifdef USE_IMGUI
         WayfarerGUI::get_instance().register_comp(this->synth);
         WayfarerGUI::get_instance().register_comp(this->effects[0]);
         WayfarerGUI::get_instance().register_comp(this->effects[1]);
+#endif
     }
 
     // ~MasterBus()  { 

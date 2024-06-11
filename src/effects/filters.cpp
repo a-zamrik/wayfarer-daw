@@ -206,7 +206,24 @@ AutoFilter::draw_gui()
     
 
     ImGui::BeginChild("Filter", ImVec2(175, 155), 0);
+    
         ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay))
+            ImGui::SetTooltip("Right-Click Me");
+
+        if (ImGui::BeginPopupContextItem("my popup"))
+        {
+            ImGui::Text("Options:");
+            if (ImGui::Selectable("  Remove From Bus"))
+            {
+                // TODO:
+                printf("Trying to remove filter with id = %d from bus\n", this->instance_id);
+                this->should_remove = true;
+            }
+            ImGui::EndPopup();
+        }
+        
+        
 
         ImGui::BeginChild("Filter Graph", ImVec2(135, 135), 0);
             ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "f-domian", 0, 5.0f, ImVec2(135, 110.0f));
@@ -215,6 +232,7 @@ AutoFilter::draw_gui()
             ImGui::SameLine();
             if (ImGui::Button("LO"))
             {
+                
                 this->filter_type = FilterType::LowPass;
                 update_params = true;
             }
