@@ -104,6 +104,7 @@ protected:
 #endif
     
 public:
+    bool deleted = false;
     AutoFilter(float _q, float _center_freq)
     {
         instance_id = AutoFilter::instance_count++;

@@ -47,8 +47,8 @@ public:
 
 #ifdef USE_IMGUI
         WayfarerGUI::get_instance().register_comp(this->synth);
-        WayfarerGUI::get_instance().register_comp(this->effects[0]);
-        WayfarerGUI::get_instance().register_comp(this->effects[1]);
+        WayfarerGUI::get_instance().register_comp(std::weak_ptr<AutoFilter>(this->effects[0]));
+        WayfarerGUI::get_instance().register_comp(std::weak_ptr<AutoFilter>(this->effects[1]));
 #endif
     }
 

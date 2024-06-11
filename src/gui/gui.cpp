@@ -433,13 +433,6 @@ bool WayfarerGUI::update_gui()
 
             ImGui::Begin("Hello, world!", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
 
-            for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
-            {
-                ImGui::SameLine();
- 
-                c->draw_gui();
-
-            }
             
             ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
             int selected = 0;
@@ -479,8 +472,9 @@ bool WayfarerGUI::update_gui()
             ImGui::End();
 
             ImGui::Begin("Instrument Chain", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
-            for (std::shared_ptr<WayfarerGuiComp> c : this->gui_comps)
-            {
+           
+            for(auto it = this->gui_comps.begin(); it != this->gui_comps.end(); it++)
+            {    
                 ImGui::SameLine();
                 {   // Draw line seperator
                     ImGui::SameLine();
@@ -490,8 +484,19 @@ bool WayfarerGUI::update_gui()
                     ImGui::Dummy(ImVec2(2, 0));
                     ImGui::SameLine();
                 }
-                c->draw_gui();
+                if (std::shared_ptr<WayfarerGuiComp> sp_c = it->lock()) {
+                    sp_c->draw_gui(); // If the effect still exists, draw it
+                }
+                else {
+                    it = this->gui_comps.erase(it); 
+                    if (it == this->gui_comps.end())
+                    {
+                        // If we are at the end, we can't incrment
+                        break;
+                    }
+                }
             }
+
             ImGui::End();
 
 

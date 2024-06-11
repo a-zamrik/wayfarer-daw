@@ -24,7 +24,7 @@ private:
     bool show_hello_world = true;
 
 
-    std::vector<std::shared_ptr<WayfarerGuiComp>> gui_comps;
+    std::vector<std::weak_ptr<WayfarerGuiComp>> gui_comps;
 
 public:
     static WayfarerGUI& get_instance()
@@ -41,12 +41,8 @@ public:
     bool update_gui();
     void cleanup();
 
-    void register_comp(std::shared_ptr<WayfarerGuiComp> c)
+    void register_comp(std::weak_ptr<WayfarerGuiComp> c)
     {
-        if (c == nullptr)
-        {
-            critical_error("Gui Component passed as NULL\n");
-        }
         gui_comps.push_back(c);
     }
 

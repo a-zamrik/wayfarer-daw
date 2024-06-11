@@ -38,9 +38,18 @@ MasterBus::paCallback(
 
     MasterBus->audio_track->fill_frame(MasterBus->frame);
 
-    for (auto e : MasterBus->effects)
+    for (auto it = MasterBus->effects.begin(); it != MasterBus->effects.end(); it++)
     {
-        e->filter_frame(MasterBus->frame);
+        (*it)->filter_frame(MasterBus->frame);
+        if ((*it)->deleted)
+        {
+            it = MasterBus->effects.erase(it);
+            if (it == MasterBus->effects.end())
+            {
+                // If we are at the end, we can't incrment
+                break;
+            }
+        }
     }
 
     // Pass frame info to output 

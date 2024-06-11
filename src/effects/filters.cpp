@@ -216,9 +216,8 @@ AutoFilter::draw_gui()
             ImGui::Text("Options:");
             if (ImGui::Selectable("  Remove From Bus"))
             {
-                // TODO:
                 printf("Trying to remove filter with id = %d from bus\n", this->instance_id);
-                this->should_remove = true;
+                this->deleted = true;
             }
             ImGui::EndPopup();
         }
