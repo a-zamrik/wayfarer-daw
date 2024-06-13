@@ -56,6 +56,7 @@ MasterBus::paCallback(
         }
 
         // An audio effect wants to move!
+        // This doesn't shift effects correctly, it just swaps places
         if((*it)->requested_position_in_chain != -1)
         {
             std::shared_ptr<AutoFilter> temp;
@@ -180,6 +181,7 @@ MasterBus::set_gain(float _gain)
 #ifdef USE_IMGUI
 
 #include "imgui.h"
+#include "imgui_internal.h"
 
 
 void MasterBus::draw_gui()
@@ -189,18 +191,11 @@ void MasterBus::draw_gui()
 
     static bool showInstrumentChain = true;
     ImGui::Begin("Instrument Chain", &showInstrumentChain);                          // Create a window called "Hello, world!" and append into it.
-           
+
+    int seperator_id = 0;
     for(auto it = this->gui_effects.begin(); it != this->gui_effects.end(); it++)
     {    
-        ImGui::SameLine();
-        {   // Draw line seperator
-            ImGui::SameLine();
-            ImVec2 p = ImGui::GetCursorScreenPos();
-            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
-            ImGui::SameLine();
-            ImGui::Dummy(ImVec2(2, 0));
-            ImGui::SameLine();
-        }
+        
         if (std::shared_ptr<WayfarerGuiComp> sp_c = it->lock()) {
             sp_c->draw_gui(); // If the effect still exists, draw it
         }
@@ -211,6 +206,52 @@ void MasterBus::draw_gui()
                 // If we are at the end, we can't incrment
                 break;
             }
+        }
+
+        ImGui::SameLine();
+        {   // Draw line seperator
+            ImGui::PushID(seperator_id);
+            ImGui::SameLine();
+            ImGui::InvisibleButton("seperator", ImVec2(5,150));
+
+            if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+                    {
+                        IM_ASSERT(payload->DataSize == sizeof(int));
+                        int payload_n = *(const int*)payload->Data;
+                        printf("Recieved %d as payload\n", payload_n);
+
+                        if (payload_n == 1)
+                        {
+                            auto new_effect =  std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f));
+                            new_effect->requested_position_in_chain = seperator_id;
+                            this->effects.push_back( new_effect );
+
+                            std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+                            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(this->synth));
+
+                            for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+                            {
+                                _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+                            }
+
+                            this->gui_effects_update_q.push(_gui_effects); 
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+
+            ImGui::DebugDrawItemRect(IM_COL32_WHITE);
+            ImGui::SameLine();
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            ImGui::GetWindowDrawList()->AddRect(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
+            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(2, 0));
+            ImGui::SameLine();
+            ImGui::PopID();
+            seperator_id++;
         }
     }
 

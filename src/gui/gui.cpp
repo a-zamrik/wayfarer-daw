@@ -544,11 +544,23 @@ bool WayfarerGUI::update_gui()
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x - 8.f, ImGui::GetCursorPos().y + 2.f));
             ImGui::BeginChild("Tab Content", ImVec2(300.f, 0));
             {
+                static int AUTOFILTER_ID = 1;
                 ImGui::PopStyleColor(2);
                 switch (selected_tab)
                 {
                     case 0:
-                        ImGui::Text("Tab 0");
+                        ImGui::Button("AutoFilter##1");
+                        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+                        {
+                            // Set payload to carry the index of our item (could be anything)
+                            ImGui::SetDragDropPayload("DND_DEMO_CELL", &AUTOFILTER_ID, sizeof(int));
+
+                            // Display preview (could be anything, e.g. when dragging an image we could decide to display
+                            // the filename and a small preview of the image, etc.)
+                            ImGui::Text("AutoFilter"); 
+                            
+                            ImGui::EndDragDropSource();
+                        }
                         break;
                     case 1:
                         ImGui::Text("Tab 1");
