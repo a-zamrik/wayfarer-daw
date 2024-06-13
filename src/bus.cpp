@@ -33,6 +33,8 @@ MasterBus::paCallback(
     float *out = (float*)outputBuffer;
     MasterBus * MasterBus =  static_cast<class MasterBus*>(userData);
 
+    bool need_update_gui = false;
+
     // Sin generotor populate frame
     MasterBus->synth->render(MasterBus->frame);
 
@@ -41,6 +43,8 @@ MasterBus::paCallback(
     for (auto it = MasterBus->effects.begin(); it != MasterBus->effects.end(); it++)
     {
         (*it)->filter_frame(MasterBus->frame);
+
+        // Gui has a list of weak pointers, it will remove its copy if it is delted
         if ((*it)->deleted)
         {
             it = MasterBus->effects.erase(it);
@@ -49,6 +53,23 @@ MasterBus::paCallback(
                 // If we are at the end, we can't incrment
                 break;
             }
+        }
+
+        // An audio effect wants to move!
+        if((*it)->requested_position_in_chain != -1)
+        {
+            std::shared_ptr<AutoFilter> temp;
+            need_update_gui = true;
+            // Place ourselves in the list
+            auto temp_it = MasterBus->effects.begin();
+            std::advance(temp_it, (*it)->requested_position_in_chain);
+
+            temp = *temp_it;
+
+            (*it)->requested_position_in_chain = -1;
+
+            *temp_it = *it;
+            *it = temp;
         }
     }
 
@@ -62,7 +83,19 @@ MasterBus::paCallback(
         }
     }
 
+    
+    if (need_update_gui)
+    {
+        std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+        _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(MasterBus->synth));
 
+        for (auto it = MasterBus->effects.begin(); it != MasterBus->effects.end(); it++)
+        {
+            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+        }
+
+        MasterBus->gui_effects_update_q.push(_gui_effects);
+    }
 
     return paContinue;
 }
@@ -142,3 +175,46 @@ MasterBus::set_gain(float _gain)
 
     return *this;
 }
+
+
+#ifdef USE_IMGUI
+
+#include "imgui.h"
+
+
+void MasterBus::draw_gui()
+{
+    // Need to update our gui list of effects
+    this->gui_effects_update_q.try_pop(gui_effects);
+
+    static bool showInstrumentChain = true;
+    ImGui::Begin("Instrument Chain", &showInstrumentChain);                          // Create a window called "Hello, world!" and append into it.
+           
+    for(auto it = this->gui_effects.begin(); it != this->gui_effects.end(); it++)
+    {    
+        ImGui::SameLine();
+        {   // Draw line seperator
+            ImGui::SameLine();
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
+            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(2, 0));
+            ImGui::SameLine();
+        }
+        if (std::shared_ptr<WayfarerGuiComp> sp_c = it->lock()) {
+            sp_c->draw_gui(); // If the effect still exists, draw it
+        }
+        else {
+            it = this->gui_effects.erase(it); 
+            if (it == this->gui_effects.end())
+            {
+                // If we are at the end, we can't incrment
+                break;
+            }
+        }
+    }
+
+    ImGui::End();
+}
+
+#endif

@@ -470,20 +470,11 @@ bool WayfarerGUI::update_gui()
             }
             ImGui::EndChild();
             ImGui::End();
+          
 
-            ImGui::Begin("Instrument Chain", &show_hello_world);                          // Create a window called "Hello, world!" and append into it.
-           
+            // Draw other gui components
             for(auto it = this->gui_comps.begin(); it != this->gui_comps.end(); it++)
             {    
-                ImGui::SameLine();
-                {   // Draw line seperator
-                    ImGui::SameLine();
-                    ImVec2 p = ImGui::GetCursorScreenPos();
-                    ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + 3, p.y + 150), IM_COL32(0,255,252, 255) , 5.0f);
-                    ImGui::SameLine();
-                    ImGui::Dummy(ImVec2(2, 0));
-                    ImGui::SameLine();
-                }
                 if (std::shared_ptr<WayfarerGuiComp> sp_c = it->lock()) {
                     sp_c->draw_gui(); // If the effect still exists, draw it
                 }
@@ -496,8 +487,6 @@ bool WayfarerGUI::update_gui()
                     }
                 }
             }
-
-            ImGui::End();
 
 
 

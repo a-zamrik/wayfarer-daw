@@ -6,9 +6,11 @@
 #include "../include/portaudio.h"
 #include "audio_track.h"
 #include "effects/filters.h"
+#include "./util/thread_safe_q.h"
+#include <list>
 
 
-class MasterBus
+class MasterBus : public WayfarerGuiComp
 {
 private:
 
@@ -28,6 +30,12 @@ private:
         PaStreamCallbackFlags statusFlags,
         void *userData );
 
+
+#ifdef USE_IMGUI
+    TSQueue<std::vector<std::weak_ptr<WayfarerGuiComp>>> gui_effects_update_q;
+    std::vector<std::weak_ptr<WayfarerGuiComp>>   gui_effects;
+#endif
+
 public:
     // Place holder variables
     Frame      frame;
@@ -37,7 +45,7 @@ public:
     std::shared_ptr<SineSynth>  synth; 
     std::shared_ptr<AudioTrack> audio_track;
 
-    std::vector<std::shared_ptr<AutoFilter>> effects;
+    std::list<std::shared_ptr<AutoFilter>> effects;
 
     
     MasterBus() : frame(), gain(0.01f) { 
@@ -46,11 +54,23 @@ public:
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
 
 #ifdef USE_IMGUI
-        WayfarerGUI::get_instance().register_comp(this->synth);
-        WayfarerGUI::get_instance().register_comp(std::weak_ptr<AutoFilter>(this->effects[0]));
-        WayfarerGUI::get_instance().register_comp(std::weak_ptr<AutoFilter>(this->effects[1]));
+        
+
+        std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+        _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(this->synth));
+
+        for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+        {
+            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+        }
+
+        this->gui_effects_update_q.push(_gui_effects);
 #endif
     }
+
+#ifdef USE_IMGUI
+    virtual void draw_gui();
+#endif
 
     // ~MasterBus()  { 
     //     delete synth;

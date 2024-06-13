@@ -105,6 +105,7 @@ protected:
     
 public:
     bool deleted = false;
+    int  requested_position_in_chain = -1;
     AutoFilter(float _q, float _center_freq)
     {
         instance_id = AutoFilter::instance_count++;
