@@ -45,6 +45,9 @@ public:
     std::shared_ptr<SineSynth>  synth; 
     std::shared_ptr<AudioTrack> audio_track;
 
+
+    // TODO: Change to use our linked list class
+    // LinkedList<std::shared_ptr<AutoFilter>> effects;
     std::list<std::shared_ptr<AutoFilter>> effects;
 
     

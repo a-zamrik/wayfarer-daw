@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "loader/wave.h"
+#include "util/linked_list.h"
 
 
 int 
