@@ -56,26 +56,12 @@ public:
             return *this;
         }
 
-        // // Prefix -- overload
-        // Iterator& operator--()
-        // {
-        //     this->node = this->node->prev;
-        //     return *this;
-        // }
-
-        // // Postfix -- overload
-        // Iterator& operator--(int)
-        // {
-        //     --*this;
-        //     return *this;
-        // }
-
-        bool operator!=(const Iterator& rhs)
+        bool operator!=(const Iterator& rhs) const
         {
             return node->next != rhs.node->next && node->prev != rhs.node->prev;
         }
 
-        T operator*()
+        T operator*() const
         {
             return node->data;
         }
@@ -200,7 +186,7 @@ public:
         it.node->next = right;
     }
 
-    inline size_t size() {return this->_size;}
+    inline size_t size() const {return this->_size;}
 
     Iterator begin()
     {

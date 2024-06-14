@@ -273,53 +273,53 @@ int main(int argc, char** argv)
 {
 
 
-    LinkedList<int> * list = new LinkedList<int>();
-    list->push_back(512);
-    list->push_back(25);
-    list->push_back(64);
+    // LinkedList<int> * list = new LinkedList<int>();
+    // list->push_back(512);
+    // list->push_back(25);
+    // list->push_back(64);
 
-    for (auto entry = list->begin() ; entry != list->end(); entry++)
-    {
-        printf("%d\n", *entry);
-    }
-    printf("Size = %zu\n", list->size());
+    // for (auto entry = list->begin() ; entry != list->end(); entry++)
+    // {
+    //     printf("%d\n", *entry);
+    // }
+    // printf("Size = %zu\n", list->size());
 
-    for (auto entry = list->begin() ; entry != list->end(); entry++)
-    {
-        if (*entry == 512)
-        {
-            list->move_to_index(entry, 2);
-            break;
-        }
-    }
-    printf("Size = %zu\n", list->size());
+    // for (auto entry = list->begin() ; entry != list->end(); entry++)
+    // {
+    //     if (*entry == 512)
+    //     {
+    //         list->move_to_index(entry, 3);
+    //         break;
+    //     }
+    // }
+    // printf("Size = %zu\n", list->size());
 
-    printf("\n");
-    for (auto entry : (*list))
-    {
-        printf("%d\n", entry);
-    }
-    printf("Size = %zu\n", list->size());
+    // printf("\n");
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // printf("Size = %zu\n", list->size());
 
-    printf("\npop back %d\n", list->pop_back());
-    printf("pop front %d\n\n", list->pop_front());
+    // printf("\npop back %d\n", list->pop_back());
+    // printf("pop front %d\n\n", list->pop_front());
 
-    for (auto entry : (*list))
-    {
-        printf("%d\n", entry);
-    }
-    printf("Size = %zu\n", list->size());
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // printf("Size = %zu\n", list->size());
 
-    list->push_front(75);
-    list->push_back(81);
-    list->push_front(5);
-    printf("Size = %zu\n", list->size());
-    for (auto entry : (*list))
-    {
-        printf("%d\n", entry);
-    }
-    delete list;
-    exit(1);
+    // list->push_front(75);
+    // list->push_back(81);
+    // list->push_front(5);
+    // printf("Size = %zu\n", list->size());
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // delete list;
+    // exit(1);
 
     std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Who.wav");
     
