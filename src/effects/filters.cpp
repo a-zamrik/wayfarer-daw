@@ -206,6 +206,19 @@ AutoFilter::draw_gui()
     
 
     ImGui::BeginChild("Filter", ImVec2(175, 155), 0);
+
+        ImGui::Button("AutoFilter");
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            // Set payload to carry the index of our item (could be anything)
+            ImGui::SetDragDropPayload("Effect_Move", &this->chain_order, sizeof(int));
+
+            // Display preview (could be anything, e.g. when dragging an image we could decide to display
+            // the filename and a small preview of the image, etc.)
+            ImGui::Text("AutoFilter"); 
+            
+            ImGui::EndDragDropSource();
+        }
     
         ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay))

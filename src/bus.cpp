@@ -5,6 +5,7 @@
 #include "instrument.h"
 #include <iostream>
 #include <algorithm>
+#include <inttypes.h>
 
 #include "loader/wave.h"
 #include "util/linked_list.h"
@@ -41,6 +42,8 @@ MasterBus::paCallback(
 
     MasterBus->audio_track->fill_frame(MasterBus->frame);
 
+    uint32_t i = 0;
+    MasterBus->effects_lock.lock();
     for (auto it = MasterBus->effects.begin(); it != MasterBus->effects.end(); it++)
     {
         (*it)->filter_frame(MasterBus->frame);
@@ -49,6 +52,7 @@ MasterBus::paCallback(
         if ((*it)->deleted)
         {
             it = MasterBus->effects.erase(it);
+            MasterBus->update_chain_oder();
             if (it == MasterBus->effects.end())
             {
                 // If we are at the end, we can't incrment
@@ -60,20 +64,14 @@ MasterBus::paCallback(
         // This doesn't shift effects correctly, it just swaps places
         if((*it)->requested_position_in_chain != -1)
         {
-            std::shared_ptr<AutoFilter> temp;
-            need_update_gui = true;
-            // Place ourselves in the list
-            auto temp_it = MasterBus->effects.begin();
-            std::advance(temp_it, (*it)->requested_position_in_chain);
-
-            temp = *temp_it;
-
+            MasterBus->move_effect_to(i, (*it)->requested_position_in_chain);
+            MasterBus->update_chain_oder();
             (*it)->requested_position_in_chain = -1;
-
-            *temp_it = *it;
-            *it = temp;
         }
+
+        i++;
     }
+    MasterBus->effects_lock.unlock();
 
     // Pass frame info to output 
     for (unsigned i = 0; i < framesPerBuffer; i++)
@@ -178,6 +176,62 @@ MasterBus::set_gain(float _gain)
     return *this;
 }
 
+void
+MasterBus::add_effect_at(uint64_t effect_id, uint32_t index)
+{
+    if (effect_id == 1)
+    {
+
+        // Rebuild effect list
+        this->effects_lock.lock();
+        this->effects.insert(std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)), index);
+        this->update_chain_oder();
+        this->effects_lock.unlock();
+
+
+        // build new list for gui
+        std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+        _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(this->synth));
+
+        for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+        {
+            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+        }
+
+        this->gui_effects_update_q.push(_gui_effects); 
+    }
+}
+
+void
+MasterBus::move_effect_to(uint64_t src_idx, uint32_t dest_idx)
+{
+
+    printf("Moving %" PRIu64"  to %u\n", src_idx, dest_idx);
+
+    auto new_effect =  std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f));
+
+    auto it_src =  this->effects.begin();
+    it_src += src_idx;
+
+    // Rebuild effect list
+    this->effects_lock.lock();
+    this->effects.move_to_index(it_src, dest_idx);
+    this->update_chain_oder();
+    this->effects_lock.unlock();
+
+    // build new list for gui
+    std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+    _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(this->synth));
+
+    for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+    {
+        _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+    }
+
+    this->gui_effects_update_q.push(_gui_effects); 
+
+}
+
 
 #ifdef USE_IMGUI
 
@@ -219,26 +273,22 @@ void MasterBus::draw_gui()
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
                     {
+
                         IM_ASSERT(payload->DataSize == sizeof(int));
                         int payload_n = *(const int*)payload->Data;
                         printf("Recieved %d as payload\n", payload_n);
 
-                        if (payload_n == 1)
-                        {
-                            auto new_effect =  std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f));
-                            new_effect->requested_position_in_chain = seperator_id;
-                            this->effects.push_back( new_effect );
+                        this->add_effect_at(payload_n, seperator_id);
+                    }
 
-                            std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
-                            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(this->synth));
+                    
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Effect_Move"))
+                    {
+                        IM_ASSERT(payload->DataSize == sizeof(int));
+                        int payload_n = *(const int*)payload->Data;
+                        printf("Recieved %d as payload\n", payload_n);
 
-                            for (auto it = this->effects.begin(); it != this->effects.end(); it++)
-                            {
-                                _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
-                            }
-
-                            this->gui_effects_update_q.push(_gui_effects); 
-                        }
+                        this->move_effect_to(payload_n, seperator_id);
                     }
                     ImGui::EndDragDropTarget();
                 }

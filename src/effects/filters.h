@@ -92,6 +92,7 @@ private:
     void __make_notch();
 
     uint32_t instance_id;
+
     static uint32_t instance_count;
 
 protected:
@@ -106,6 +107,14 @@ protected:
 public:
     bool deleted = false;
     int  requested_position_in_chain = -1;
+    uint32_t chain_order;
+
+    AutoFilter()
+    {
+        instance_id = AutoFilter::instance_count++;
+        this->set_params(0.707f, 500.0f);
+    }
+
     AutoFilter(float _q, float _center_freq)
     {
         instance_id = AutoFilter::instance_count++;
@@ -113,6 +122,9 @@ public:
     }
 
 };
+
+
+
 
 
 #endif

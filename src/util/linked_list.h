@@ -1,7 +1,7 @@
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
 
-template <typename T>
+template <class T>
 class LinkedList
 {
 
@@ -49,6 +49,15 @@ public:
             return *this;
         }
 
+        inline 
+        Iterator& operator+=(int rhs)
+        {
+            for (int i = 0; i < rhs && this->node->next!=nullptr; i++)
+                this->node = this->node->next;
+                
+            return *this;
+        }
+
         // Postfix ++ overload
         inline 
         Iterator& operator++(int)
@@ -61,6 +70,12 @@ public:
         bool operator!=(const Iterator& rhs) const
         {
             return node->next != rhs.node->next && node->prev != rhs.node->prev;
+        }
+
+        inline 
+        bool operator==(const Iterator& rhs) const
+        {
+            return this->operator!=(rhs);
         }
 
         inline 
@@ -81,7 +96,10 @@ public:
 
     T pop_back();
 
-    void move_to_index(Iterator& it, const int index);
+    void move_to_index(Iterator it, const int index);
+    void insert(T entry, const int index);
+
+    Iterator& erase(Iterator& it);
 
     inline 
     size_t size() const {return this->_size;}
@@ -98,5 +116,7 @@ public:
         return Iterator(&tail);
     }
 };
+
+
 
 #endif

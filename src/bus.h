@@ -7,6 +7,7 @@
 #include "audio_track.h"
 #include "effects/filters.h"
 #include "./util/thread_safe_q.h"
+#include "./util/linked_list.h"
 #include <list>
 
 
@@ -48,13 +49,16 @@ public:
 
     // TODO: Change to use our linked list class
     // LinkedList<std::shared_ptr<AutoFilter>> effects;
-    std::list<std::shared_ptr<AutoFilter>> effects;
+    LinkedList<std::shared_ptr<AutoFilter>> effects;
+    std::mutex effects_lock;
 
     
     MasterBus() : frame(), gain(0.01f) { 
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
+        update_chain_oder();
 
 #ifdef USE_IMGUI
         
@@ -81,11 +85,27 @@ public:
 
     MasterBus& set_gain(float _gain);
 
+    
+    void add_effect_at(uint64_t effect_id, uint32_t index);
+    void move_effect_to(uint64_t src_idx, uint32_t dest_idx);
+    
+
     void init_stream();
 
     void start_stream();
 
     void stop_stream();
+
+    void update_chain_oder()
+    {
+        unsigned i = 0;
+        for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+        {
+            (*it)->chain_order = i;
+            i++;
+        }
+
+    }
 
 };
 
