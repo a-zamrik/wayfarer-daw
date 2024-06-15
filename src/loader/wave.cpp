@@ -69,6 +69,7 @@ WaveFileLoader::load(std::string _file_path) {
 
 
     size_t bytes_read = 0;
+    size_t sample_index = 0;
     while (bytes_read < header.FirstSubChunk.SubchunkSize)
     {
 
@@ -93,8 +94,8 @@ WaveFileLoader::load(std::string _file_path) {
 
 
 
-            
-        data[current_channel].push_back(sample);
+        
+        data[current_channel][sample_index] = sample;
         
         
 
@@ -102,6 +103,7 @@ WaveFileLoader::load(std::string _file_path) {
         if (current_channel == header.NumChannels)
         {
             current_channel = 0;
+            sample_index++;
         }
     }
 

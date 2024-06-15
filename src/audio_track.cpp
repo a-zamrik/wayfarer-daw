@@ -41,6 +41,7 @@ AudioTrack::fill_frame(Frame & frame)
 void 
 AudioTrack::target_sample_rate(uint32_t new_sample_rate)
 {
+    // TODO: make this pre allocate size
     std::vector<std::vector<float>> new_samples;
 
     // create same number of channels
