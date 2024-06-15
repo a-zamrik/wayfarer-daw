@@ -42,7 +42,6 @@ MasterBus::paCallback(
 
     MasterBus->audio_track->fill_frame(MasterBus->frame);
 
-    uint32_t i = 0;
     MasterBus->effects_lock.lock();
     for (auto it = MasterBus->effects.begin(); it != MasterBus->effects.end(); it++)
     {
@@ -59,17 +58,6 @@ MasterBus::paCallback(
                 break;
             }
         }
-
-        // An audio effect wants to move!
-        // This doesn't shift effects correctly, it just swaps places
-        if((*it)->requested_position_in_chain != -1)
-        {
-            MasterBus->move_effect_to(i, (*it)->requested_position_in_chain);
-            MasterBus->update_chain_oder();
-            (*it)->requested_position_in_chain = -1;
-        }
-
-        i++;
     }
     MasterBus->effects_lock.unlock();
 
@@ -206,7 +194,7 @@ void
 MasterBus::move_effect_to(uint64_t src_idx, uint32_t dest_idx)
 {
 
-    printf("Moving %" PRIu64"  to %u\n", src_idx, dest_idx);
+    //printf("Moving %" PRIu64"  to %u\n", src_idx, dest_idx);
 
     auto new_effect =  std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f));
 
@@ -276,7 +264,7 @@ void MasterBus::draw_gui()
 
                         IM_ASSERT(payload->DataSize == sizeof(int));
                         int payload_n = *(const int*)payload->Data;
-                        printf("Recieved %d as payload\n", payload_n);
+                        //printf("Recieved %d as payload\n", payload_n);
 
                         this->add_effect_at(payload_n, seperator_id);
                     }
@@ -285,10 +273,13 @@ void MasterBus::draw_gui()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Effect_Move"))
                     {
                         IM_ASSERT(payload->DataSize == sizeof(int));
-                        int payload_n = *(const int*)payload->Data;
-                        printf("Recieved %d as payload\n", payload_n);
+                        int effect_order_num = *(const int*)payload->Data;
+                        //printf("Effect %d as wants to move\n", effect_order_num);
 
-                        this->move_effect_to(payload_n, seperator_id);
+                        if (effect_order_num < seperator_id)
+                            this->move_effect_to(effect_order_num, seperator_id - 1);
+                        else
+                            this->move_effect_to(effect_order_num, seperator_id);
                     }
                     ImGui::EndDragDropTarget();
                 }

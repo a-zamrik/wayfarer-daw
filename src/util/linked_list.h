@@ -45,6 +45,10 @@ public:
         inline 
         Iterator& operator++()
         {
+            if (this->node->next == nullptr)
+            {
+                return *this;
+            }
             this->node = this->node->next;
             return *this;
         }
@@ -54,7 +58,7 @@ public:
         {
             for (int i = 0; i < rhs && this->node->next!=nullptr; i++)
                 this->node = this->node->next;
-                
+
             return *this;
         }
 
@@ -99,7 +103,7 @@ public:
     void move_to_index(Iterator it, const int index);
     void insert(T entry, const int index);
 
-    Iterator& erase(Iterator& it);
+    Iterator erase(Iterator& it);
 
     inline 
     size_t size() const {return this->_size;}

@@ -106,7 +106,6 @@ protected:
     
 public:
     bool deleted = false;
-    int  requested_position_in_chain = -1;
     uint32_t chain_order;
 
     AutoFilter()

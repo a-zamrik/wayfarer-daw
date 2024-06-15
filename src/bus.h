@@ -110,3 +110,15 @@ public:
 };
 
 #endif
+
+
+//   0    1    2    3 
+// 0 [] 1 [] 2 [] 3 [] 4 
+
+// 0 1 -> 0
+// 1 2 -> 1
+// 2 3 -> 2
+
+
+// if this->order < section:
+//     nex index = section - 1

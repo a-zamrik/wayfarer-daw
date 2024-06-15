@@ -145,7 +145,7 @@ LinkedList<T>::insert(T entry, const int insert_index)
 }
 
 template <typename T>
-typename LinkedList<T>::Iterator &
+typename LinkedList<T>::Iterator
 LinkedList<T>::erase(LinkedList<T>::Iterator & it)
 {
     Container * left =  it.node->prev;
@@ -159,7 +159,7 @@ LinkedList<T>::erase(LinkedList<T>::Iterator & it)
 
     _size--;
 
-    it = right;
+    it = Iterator(right);
     return it;
 }
 
