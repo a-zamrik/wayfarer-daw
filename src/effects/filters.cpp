@@ -205,7 +205,7 @@ AutoFilter::draw_gui()
     ImGui::PushID(this->instance_id);
     
 
-    ImGui::BeginChild("Filter", ImVec2(175, 155), 0);
+    ImGui::BeginGroup();
 
         ImGui::Button("AutoFilter");
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -220,7 +220,7 @@ AutoFilter::draw_gui()
             ImGui::EndDragDropSource();
         }
     
-        ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
+        //ImGui::TextColored(ImVec4(0.0f, 255.0f, 252.0f, 0.8f), "Filter");
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay))
             ImGui::SetTooltip("Right-Click Me");
 
@@ -237,7 +237,7 @@ AutoFilter::draw_gui()
         
         
 
-        ImGui::BeginChild("Filter Graph", ImVec2(135, 135), 0);
+        ImGui::BeginGroup();
             ImGui::PlotLines("", this->__freq_response_table, IM_ARRAYSIZE(this->__freq_response_table), 0, "f-domian", 0, 5.0f, ImVec2(135, 110.0f));
 
             ImGui::Dummy(ImVec2(3, 0));
@@ -266,11 +266,11 @@ AutoFilter::draw_gui()
                 this->filter_type = FilterType::Notch;
                 update_params = true;
             }
-        ImGui::EndChild();
+        ImGui::EndGroup();
 
         ImGui::SameLine();
 
-        ImGui::BeginChild("FQ", ImVec2(25, 135), 0);
+        ImGui::BeginGroup();
 
             if (ImGuiKnobs::Knob("Q", &this->q, 0.01f, 10.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
                 update_params = true;
@@ -278,9 +278,9 @@ AutoFilter::draw_gui()
             if (ImGuiKnobs::Knob("F", &this->center_freq, this->min_freq, this->max_freq, 100.0f, "%.2f", ImGuiKnobVariant_Wiper, 25.0f)) {
                 update_params = true;
             }
-        ImGui::EndChild();
+        ImGui::EndGroup();
         
-    ImGui::EndChild();
+    ImGui::EndGroup();
 
     ImGui::PopID();
     if (update_params) 

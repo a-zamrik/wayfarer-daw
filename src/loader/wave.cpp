@@ -64,7 +64,7 @@ WaveFileLoader::load(std::string _file_path) {
 
     for (int c=0; c < header.NumChannels; c++)
     {
-        data.push_back(std::vector<float>());
+        data.push_back(std::vector<float>(header.FirstSubChunk.SubchunkSize / (header.BitsPerSample / 8)));
     }
 
 

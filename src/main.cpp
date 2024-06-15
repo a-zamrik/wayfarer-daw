@@ -366,7 +366,10 @@ int main(int argc, char** argv)
 
 
     std::shared_ptr<MasterBus> master_bus = std::shared_ptr<MasterBus>(new MasterBus());
-    //master_bus->set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
+    if (argparser.get_arguement("-g")->is_present())
+        master_bus->set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
+    else
+        master_bus->set_gain(0.01f);
 
     master_bus->audio_track = audio_track;
     master_bus->init_stream();
