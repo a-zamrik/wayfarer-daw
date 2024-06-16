@@ -11,26 +11,16 @@
 #include <list>
 
 
-class MasterBus : public WayfarerGuiComp
+class Bus : public WayfarerGuiComp
 {
+
 private:
+    std::shared_ptr<SineSynth>  synth; 
+    std::shared_ptr<AudioTrack> audio_track;
 
-
-
-    // TODO: Instrument / Generator / Audio Input
-
-    // TODO: Audio Effects
-    // std::vector<AudioEffect> effect_chain;
+protected:
 
     float gain;
-
-    PaStream *stream;
-    static int paCallback( const void *inputBuffer, void *outputBuffer,
-        unsigned long framesPerBuffer,
-        const PaStreamCallbackTimeInfo* timeInfo,
-        PaStreamCallbackFlags statusFlags,
-        void *userData );
-
 
 #ifdef USE_IMGUI
     TSQueue<std::vector<std::weak_ptr<WayfarerGuiComp>>> gui_effects_update_q;
@@ -38,13 +28,14 @@ private:
 #endif
 
 public:
-    // Place holder variables
-    Frame      frame;
-
 
     
-    std::shared_ptr<SineSynth>  synth; 
-    std::shared_ptr<AudioTrack> audio_track;
+    std::shared_ptr<SineSynth> & get_instrument() {return this->synth;}
+    std::shared_ptr<AudioTrack> & get_audio_track() {return this->audio_track;}
+
+    void set_instrument(std::shared_ptr<SineSynth> & inst) {this->synth = inst;}
+    void set_audio_track(std::shared_ptr<AudioTrack> & audio) {this->audio_track = audio;}
+
 
 
     // TODO: Change to use our linked list class
@@ -53,7 +44,7 @@ public:
     std::mutex effects_lock;
 
     
-    MasterBus() : frame(), gain(0.01f) { 
+    Bus() :  gain(0.01f) { 
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
@@ -83,20 +74,15 @@ public:
     //     delete synth;
     // }
 
-    MasterBus& set_gain(float _gain);
+    virtual Bus& set_gain(float _gain);
+
+    void render_frame(Frame & frame);
 
     
-    void add_effect_at(uint64_t effect_id, uint32_t index);
-    void move_effect_to(uint64_t src_idx, uint32_t dest_idx);
+    virtual void add_effect_at(uint64_t effect_id, uint32_t index);
+    virtual void move_effect_to(uint64_t src_idx, uint32_t dest_idx);
     
-
-    void init_stream();
-
-    void start_stream();
-
-    void stop_stream();
-
-    void update_chain_oder()
+    virtual void update_chain_oder()
     {
         unsigned i = 0;
         for (auto it = this->effects.begin(); it != this->effects.end(); it++)
@@ -106,6 +92,74 @@ public:
         }
 
     }
+
+};
+
+
+class MasterBus : public Bus
+{
+private:
+
+    float gain;
+
+    PaStream *stream;
+    static int paCallback( const void *inputBuffer, void *outputBuffer,
+        unsigned long framesPerBuffer,
+        const PaStreamCallbackTimeInfo* timeInfo,
+        PaStreamCallbackFlags statusFlags,
+        void *userData );
+
+
+#ifdef USE_IMGUI
+    TSQueue<std::vector<std::weak_ptr<WayfarerGuiComp>>> gui_effects_update_q;
+    std::vector<std::weak_ptr<WayfarerGuiComp>>   gui_effects;
+#endif
+
+public:
+    Frame      frame;
+
+    LinkedList<std::shared_ptr<Bus>> busses;
+    std::mutex busses_lock;
+
+    // TODO: Change to use our linked list class
+    // LinkedList<std::shared_ptr<AutoFilter>> effects;
+    LinkedList<std::shared_ptr<AutoFilter>> effects;
+    std::mutex effects_lock;
+
+    void add_bus(std::shared_ptr<Bus> & bus) {
+        this->busses_lock.lock();
+        this->busses.push_back(bus);
+        this->busses_lock.unlock();
+    }
+
+    void init_stream();
+    void start_stream();
+    void stop_stream();
+
+
+    MasterBus() : frame(), gain(0.01f) { 
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
+        effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
+        update_chain_oder();
+
+#ifdef USE_IMGUI
+        
+        std::vector<std::weak_ptr<WayfarerGuiComp>> _gui_effects;
+
+        for (auto it = this->effects.begin(); it != this->effects.end(); it++)
+        {
+            _gui_effects.push_back(std::weak_ptr<WayfarerGuiComp>(*it));
+        }
+
+        this->gui_effects_update_q.push(_gui_effects);
+#endif
+    }
+
+#ifdef USE_IMGUI
+    //virtual void draw_gui();
+#endif
+
 
 };
 

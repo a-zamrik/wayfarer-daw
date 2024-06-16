@@ -2,11 +2,13 @@
 #include "../error.h"
 #include "stdio.h"
 #include "../effects/filters.h"
+#include "../bus.h"
 #include <memory>
 
 // explicit instantiations
 template class LinkedList<int>;
 template class LinkedList<std::shared_ptr<AutoFilter>>;
+template class LinkedList<std::shared_ptr<Bus>>;
 // You will only be able to use LinkedList with the listed above
 
 template <class T>

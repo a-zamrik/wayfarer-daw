@@ -365,17 +365,19 @@ int main(int argc, char** argv)
     }
 
 
+    std::shared_ptr<Bus> bus_one = std::shared_ptr<Bus>(new Bus());
     std::shared_ptr<MasterBus> master_bus = std::shared_ptr<MasterBus>(new MasterBus());
     if (argparser.get_arguement("-g")->is_present())
         master_bus->set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
     else
         master_bus->set_gain(0.01f);
 
-    master_bus->audio_track = audio_track;
+    bus_one->set_audio_track(audio_track);
+    master_bus->add_bus(bus_one);
     master_bus->init_stream();
     master_bus->start_stream();
 
-    WayfarerGUI::get_instance().register_comp(std::weak_ptr<WayfarerGuiComp>(master_bus));
+    WayfarerGUI::get_instance().register_comp(std::weak_ptr<WayfarerGuiComp>(bus_one));
 
 #ifdef _WIN32
 
@@ -384,7 +386,7 @@ int main(int argc, char** argv)
     kb_controller.add_key_bind(VK_MAP::Z, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
     GControllers::get_instance().register_controller(kb_controller);
     
-    GMidi::get_instance().activate_instrument(master_bus->synth, "sine_synth");
+    GMidi::get_instance().activate_instrument(bus_one->get_instrument(), "sine_synth");
 
     unsigned poll_period_ms = 10;
     if (argparser.get_arguement("-cpp")->is_present()) {
