@@ -1,6 +1,7 @@
 #include "instrument.h"
 #include "global_config.h"
 #include "midi.h"
+#include "sequence.h"
 
 
 #define START_MIDI_NOTE 21
@@ -23,10 +24,6 @@ SineSynth::SineSynth()
     {
         osc.turn_off();
     }
-
-
-
-    
 }
 
 
@@ -48,7 +45,7 @@ SineSynth::handle_event(MidiEvent & event)
     }
     else
     {
-        // printf("INDEX OOR\n");
+        printf("MIDI NOTE OOR // INDEX OOR\n");
     }
     
 }
@@ -61,6 +58,12 @@ SineSynth::render(Frame & frame)
 
     for (int i = 0; i < frame_size; i++)
     {
+        if (auto b_seq = bound_sequence.lock())
+        {
+            // TODO: this is convoluted, we should have tick return a midi event intead
+            b_seq->tick();
+        }
+
         float sample = this->get_next_sample() * this->gain_lin;
         for (int c = 0; c < channels; c++)
         {

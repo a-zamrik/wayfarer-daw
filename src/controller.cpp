@@ -31,11 +31,11 @@ Controller::tick()
         if(GetAsyncKeyState(mb.first) & 0x8000 /*Check if high-order bit is set (1 << 15)*/)
         {
             
-            GMidi::get_instance().create_event(mb.second, true);
+            GMidi::get_instance().create_global_event(mb.second, true);
         }
         else
         {
-            GMidi::get_instance().create_event(mb.second, false);
+            GMidi::get_instance().create_global_event(mb.second, false);
         }
     }
 }

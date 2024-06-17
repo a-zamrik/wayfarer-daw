@@ -6,6 +6,7 @@
 #include "./gui/gui.h"
 #include <vector>
 
+class MidiSequence;
 
 float linear_to_db(float float_pcm);
 float db_to_linear(float float_db);
@@ -43,6 +44,8 @@ class SineSynth : public Instrument, public WayfarerGuiComp
         void update_adsr();
 
     public:
+
+        std::weak_ptr<MidiSequence> bound_sequence;
         SineSynth();
         virtual void handle_event(MidiEvent & event);    
         virtual void render(Frame & frame);

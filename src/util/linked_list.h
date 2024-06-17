@@ -1,6 +1,8 @@
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
 
+#include "../error.h"
+
 template <class T>
 class LinkedList
 {
@@ -73,23 +75,30 @@ public:
         inline 
         bool operator!=(const Iterator& rhs) const
         {
-            return node->next != rhs.node->next && node->prev != rhs.node->prev;
+            return !this->operator==(rhs);
         }
 
         inline 
         bool operator==(const Iterator& rhs) const
         {
-            return this->operator!=(rhs);
+            return node->next == rhs.node->next && node->prev == rhs.node->prev;
         }
 
         inline 
         T operator*() const
         {
+            if (node->prev == nullptr || node->next == nullptr)
+            {
+                throw std::exception("Iterator pointed to head or tail, can't dereference");
+            }
             return node->data;
         }
     };
 
     LinkedList();
+    LinkedList(const LinkedList & rhs) {
+        critical_error("NOT IMPLEMENTED\n");
+    }
     ~LinkedList();
 
     void push_back(T entry);
@@ -108,6 +117,15 @@ public:
     inline 
     size_t size() const {return this->_size;}
 
+    // inline T operator[](int n)
+    // {
+    //     Container * node = head.next;
+    //     for (int i = 0; i < n && this->node->next!=nullptr; i++)
+    //         node = node->next;
+
+    //     return node->data;
+    // }
+
     inline 
     Iterator begin()
     {
@@ -118,6 +136,11 @@ public:
     Iterator end()
     {
         return Iterator(&tail);
+    }
+
+    void operator=(const LinkedList &rhs)
+    {
+        critical_error("NOT IMPLEMENTED\n");
     }
 };
 

@@ -45,8 +45,6 @@ public:
     {
         gui_comps.push_back(c);
     }
-
-
 };
 
 #endif // __GUI_H__

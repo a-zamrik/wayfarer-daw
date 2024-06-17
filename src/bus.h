@@ -9,6 +9,7 @@
 #include "./util/thread_safe_q.h"
 #include "./util/linked_list.h"
 #include <list>
+#include "sequence.h"
 
 
 class Bus : public WayfarerGuiComp
@@ -29,6 +30,9 @@ protected:
 
 public:
 
+    // TODO: NEED TO STORE MIDI NOTE SEGMENTS SOME HOW AND READ FROM THEM.
+    //       CREATE MIDI NOTE SEQUENCER CLASS OR SOMETHIGN
+
     
     std::shared_ptr<SineSynth> & get_instrument() {return this->synth;}
     std::shared_ptr<AudioTrack> & get_audio_track() {return this->audio_track;}
@@ -43,6 +47,9 @@ public:
     LinkedList<std::shared_ptr<AutoFilter>> effects;
     std::mutex effects_lock;
 
+
+    std::shared_ptr<MidiSequence> midi_sequence;
+
     
     Bus() :  gain(0.01f) { 
         synth = std::shared_ptr<SineSynth> (new SineSynth()); 
@@ -50,6 +57,13 @@ public:
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f)) );
         effects.push_back( std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 500.f)) ); 
         update_chain_oder();
+
+        midi_sequence = std::shared_ptr<MidiSequence>(new MidiSequence());
+
+        midi_sequence->bound_instrument = std::weak_ptr<SineSynth>(synth);
+        synth->bound_sequence = std::weak_ptr<MidiSequence>(midi_sequence);
+
+        //midi_sequence->add_note(0, 3.0f, 1.f);
 
 #ifdef USE_IMGUI
         

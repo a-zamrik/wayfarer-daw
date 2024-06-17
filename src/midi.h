@@ -52,7 +52,7 @@ class GMidi
 
         static float midi_note_to_freq(unsigned midi_note);
 
-        void create_event(unsigned note_num, bool is_pressed);
+        void create_global_event(unsigned note_num, bool is_pressed);
 
         void activate_instrument(std::shared_ptr<SineSynth>  i, std::string name);
 

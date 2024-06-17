@@ -4,11 +4,13 @@
 #include "../effects/filters.h"
 #include "../bus.h"
 #include <memory>
+#include "../sequence.h"
 
 // explicit instantiations
 template class LinkedList<int>;
 template class LinkedList<std::shared_ptr<AutoFilter>>;
 template class LinkedList<std::shared_ptr<Bus>>;
+template class LinkedList<MidiSequence::Note>;
 // You will only be able to use LinkedList with the listed above
 
 template <class T>

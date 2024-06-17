@@ -59,6 +59,7 @@
 #include "midi.h"
 #include "loader/wave.h"
 #include "gui/gui.h"
+#include "gui/bus_track_view.h"
 #include "util/linked_list.h"
 
 
@@ -374,6 +375,15 @@ int main(int argc, char** argv)
 
     bus_one->set_audio_track(audio_track);
     master_bus->add_bus(bus_one);
+
+#ifdef USE_IMGUI
+    // Register busses and master busses to Gui
+    std::shared_ptr<GuiBusTrackView> gui_bus_track_view = std::shared_ptr<GuiBusTrackView>(new GuiBusTrackView());
+    gui_bus_track_view->master_bus = master_bus;
+    gui_bus_track_view->busses.push_back(bus_one);
+    WayfarerGUI::get_instance().register_comp(std::weak_ptr<WayfarerGuiComp>(gui_bus_track_view));
+#endif
+
     master_bus->init_stream();
     master_bus->start_stream();
 
