@@ -24,8 +24,9 @@ MidiSequence::MidiSequence()
 
     add_note(60, 0.1f, 0.5f);
     add_note(60, 0.2f, 0.5f);
-    add_note(60, 0.21f, 5.f);
+    add_note(60, 0.21f, 10.f);
     add_note(60, 0.f, 10.f);
+
 
 
     for (int i = 0; i < MAX_MIDI; i++)
@@ -66,23 +67,26 @@ MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duratio
         }
     }
     ++it; // now pointing at new entry
-    if (++it != piano_roll[midi_note_num]->end())
+
+    // need to process as many notes after the new note as needed.
+    // may be more than one note that needs to be deleted/adjusted
+    while (++it != piano_roll[midi_note_num]->end() && (*it).start_s < start_time_s + duration_s)
     {
-        if ((*it).start_s < start_time_s + duration_s)
+        
+        // notes new start time goes further than its original end time, just remove it
+        if ( ((*it).duration_s + (*it).start_s) < (start_time_s + duration_s) )
         {
-            
-            // notes new start time goes further than its original end time, just remove it
-            if ((*it).duration_s < ((*it).start_s - (start_time_s + duration_s)) )
-            {
-                piano_roll[midi_note_num]->erase(it);
-            }
-            // we can move the start time up, we have space
-            else
-            {
-                (*it).start_s = start_time_s + duration_s;
-            }
+            it = piano_roll[midi_note_num]->erase(it);
+            --it; // erase returns the next element, but we incremnet in the while loop
+        }
+        // we can move the start time up, we have space. Duration adjusted to have the same end 
+        else
+        {
+            (*it).duration_s -= (start_time_s + duration_s) - (*it).start_s;
+            (*it).start_s    = start_time_s + duration_s;
         }
     }
+    
 
 
 

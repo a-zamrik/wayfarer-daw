@@ -30,12 +30,19 @@ Controller::tick()
     {
         if(GetAsyncKeyState(mb.first) & 0x8000 /*Check if high-order bit is set (1 << 15)*/)
         {
-            
-            GMidi::get_instance().create_global_event(mb.second, true);
+            if (!midi_states[mb.first])
+            {
+                midi_states[mb.first] = true;
+                GMidi::get_instance().create_global_event(mb.second, true);
+            }
         }
         else
         {
-            GMidi::get_instance().create_global_event(mb.second, false);
+            if (midi_states[mb.first])
+            {
+                midi_states[mb.first] = false;
+                GMidi::get_instance().create_global_event(mb.second, false);
+            }
         }
     }
 }
@@ -43,6 +50,11 @@ Controller::tick()
 KeyboardController::KeyboardController()
 {
     this->build_keyboard();
+
+    for (int i = 0; i < 155; i++)
+    {
+        midi_states[i] = false;
+    }
 }
 
 void

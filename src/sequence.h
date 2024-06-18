@@ -58,8 +58,11 @@ public:
     // Tell sequencer to move forward in time by a single sample
     void tick();
 
-
     void reset();
+
+    // TODO: set sample_index to represent time.
+    //       update key states and note iterators to reflect change
+    void set_time(float time) { critical_error("NOT IMPLMENTED");}
 
 };
 

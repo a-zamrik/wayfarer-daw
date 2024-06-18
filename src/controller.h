@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include "global_config.h"
+#include "midi.h"
 
 #ifdef _WIN32
 
@@ -47,6 +48,8 @@ class Controller
 protected:
     std::unordered_map<int, bool> keybindings_state; 
     std::unordered_map<int, std::function<void()>> keybindings; 
+
+    std::unordered_map<int, bool> midi_states; 
     std::unordered_map<int, unsigned> midi_bindings; 
     unsigned midi_octave_offset = 0;
 
@@ -64,8 +67,18 @@ private:
 public:
     KeyboardController();
     void add_key_bind(int, std::function<void()>);
-    void octave_shift_up() {this->midi_octave_offset++; this->build_keyboard();}
-    void octave_shift_down() {this->midi_octave_offset--; this->build_keyboard();}
+    void clear_bound_keys() {
+        for (auto mb : this->midi_bindings)
+        {   // clear key presses
+            GMidi::get_instance().create_global_event(mb.second, false);
+            midi_states[mb.first] = false;
+        }
+    }
+    void octave_shift_up() {
+        clear_bound_keys();
+        this->midi_octave_offset++; 
+        this->build_keyboard();}
+    void octave_shift_down() {clear_bound_keys(); this->midi_octave_offset--; this->build_keyboard();}
 };
 
 
