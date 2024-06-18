@@ -200,3 +200,41 @@ LinkedList<T>::move_to_index(LinkedList<T>::Iterator it, const int index)
     it.node->prev = left;
     it.node->next = right;
 }
+
+
+template <typename T>
+typename LinkedList<T>::Iterator
+LinkedList<T>::sorted_insert(T entry, bool (*condition)(const T& rhs, const T& new_entry))
+{
+    if (condition == nullptr)
+    {
+        critical_error("Conditional compare passed in as nullptr\n");
+    }
+
+    Container * curr = head.next;
+
+    // Find end of list or where we should insert into the list
+    while (curr->next != nullptr && !condition(curr->data, entry))
+    {
+        curr = curr->next;
+    }
+
+    // we found where we need to insert, back up one s.t. entry will be on the left/prev of where
+    // it should be
+    curr = curr->prev;
+
+    Container * left  = curr;
+    Container * right = left->next;
+    Container * new_entry = new Container(entry);
+
+    // linke nodes
+    left->next = new_entry;
+    right->prev = new_entry;
+    new_entry->prev = left;
+    new_entry->next = right;
+
+    // Keep accurate count of size
+    _size++;
+
+    return Iterator(new_entry);
+}

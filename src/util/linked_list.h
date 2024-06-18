@@ -56,9 +56,20 @@ public:
         }
 
         inline 
-        Iterator& operator+=(int rhs)
+        Iterator& operator--()
         {
-            for (int i = 0; i < rhs && this->node->next!=nullptr; i++)
+            if (this->node->prev == nullptr)
+            {
+                return *this;
+            }
+            this->node = this->node->prev;
+            return *this;
+        }
+
+        inline 
+        Iterator& operator+=(unsigned rhs)
+        {
+            for (unsigned i = 0; i < rhs && this->node->next!=nullptr; i++)
                 this->node = this->node->next;
 
             return *this;
@@ -69,6 +80,13 @@ public:
         Iterator& operator++(int)
         {
             ++*this;
+            return *this;
+        }
+
+        inline 
+        Iterator& operator--(int)
+        {
+            --*this;
             return *this;
         }
 
@@ -85,13 +103,19 @@ public:
         }
 
         inline 
-        T operator*() const
+        T& operator*() const
         {
             if (node->prev == nullptr || node->next == nullptr)
             {
                 throw std::exception("Iterator pointed to head or tail, can't dereference");
             }
             return node->data;
+        }
+
+        inline
+        T& operator->() const
+        {
+            return this->operator*();
         }
     };
 
@@ -112,6 +136,14 @@ public:
     void move_to_index(Iterator it, const int index);
     void insert(T entry, const int index);
 
+
+    // O(N) Insert Sort. Does not guarantee list is always sorted unless you only add using this method
+    // Starting from the head of the list, will insert entry once the condition returns true
+    // will be s.t. entry will be on the left/prev to the element in the list that returned true
+    //
+    // Returns an iterator to the entry added
+    Iterator sorted_insert(T entry, bool (*condition)(const T& rhs, const T& new_entry));
+
     Iterator erase(Iterator& it);
 
     inline 
@@ -125,6 +157,12 @@ public:
 
     //     return node->data;
     // }
+
+    inline 
+    Iterator get_head()
+    {
+        return Iterator(&head);
+    }
 
     inline 
     Iterator begin()

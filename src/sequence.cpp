@@ -17,14 +17,16 @@ MidiSequence::MidiSequence()
 
 
 
-    for (uint32_t i = 60; i < MAX_MIDI; i++)
-    {
-        add_note(i, 3.0f + (0.5f * (i - 60)), 0.1f);
-    }
-    // add_note(60, 3.0f, 0.1f);
-    // add_note(61, 3.5f, 0.1f);
-    // add_note(62, 4.f, 0.1f);
-    // add_note(60, 4.5f, 0.1f);
+    // for (uint32_t i = 60; i < MAX_MIDI; i++)
+    // {
+    //     add_note(i, 3.0f + (0.5f * (i - 60)), 0.1f);
+    // }
+
+    add_note(60, 0.1f, 0.5f);
+    add_note(60, 0.2f, 0.5f);
+    add_note(60, 0.21f, 5.f);
+    add_note(60, 0.f, 10.f);
+
 
     for (int i = 0; i < MAX_MIDI; i++)
     {
@@ -46,8 +48,44 @@ MidiSequence::reset()
 void
 MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duration_s)
 {
-    // TODO: this needs to insert into the right place
-    piano_roll[midi_note_num]->push_back(MidiSequence::Note(start_time_s, duration_s));
+    // Insert the note into the correct order
+    LinkedList<Note>::Iterator it = piano_roll[midi_note_num]->sorted_insert(
+        MidiSequence::Note(start_time_s, duration_s),
+        [] (const Note & rhs, const Note & new_entry) -> bool {return rhs.start_s > new_entry.start_s;}
+    );
+
+
+    // TODO: This does not account for when more than one note before or after need to be adjusted
+
+    // we now need trim the end time of the prvious note, and push back the start time of the next note after.
+    if (--it != piano_roll[midi_note_num]->get_head())
+    {
+        if ((*it).duration_s > start_time_s)
+        {
+            (*it).duration_s = start_time_s;
+        }
+    }
+    ++it; // now pointing at new entry
+    if (++it != piano_roll[midi_note_num]->end())
+    {
+        if ((*it).start_s < start_time_s + duration_s)
+        {
+            
+            // notes new start time goes further than its original end time, just remove it
+            if ((*it).duration_s < ((*it).start_s - (start_time_s + duration_s)) )
+            {
+                piano_roll[midi_note_num]->erase(it);
+            }
+            // we can move the start time up, we have space
+            else
+            {
+                (*it).start_s = start_time_s + duration_s;
+            }
+        }
+    }
+
+
+
 }
 
 
@@ -55,7 +93,7 @@ void
 MidiSequence::tick()
 {
     sample_index++;
-    if (sample_index >= 48000 * 10)
+    if (sample_index >= 48000 * 20)
     {
         this->reset();
     }
