@@ -56,8 +56,6 @@ MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duratio
     );
 
 
-    // TODO: This does not account for when more than one note before or after need to be adjusted
-
     // we now need trim the end time of the prvious note, and push back the start time of the next note after.
     if (--it != piano_roll[midi_note_num]->get_head())
     {
@@ -86,10 +84,6 @@ MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duratio
             (*it).start_s    = start_time_s + duration_s;
         }
     }
-    
-
-
-
 }
 
 
@@ -97,6 +91,16 @@ void
 MidiSequence::tick()
 {
     sample_index++;
+
+    // TODO:
+    //      We may want to early return so we aren't running this so much. we may want
+    //      to set a update period.
+    //      a sample rate of 48,000 means we run this code 20 microseconds.
+    //      Midi notes do not need to be updated at that frequency.
+    //      Maybe 1 ms is good, so a sample rate of 48,000 we update every 48 samples
+    //      1 ms is also really frequent, we could just update every 5 - 10 ms
+
+    // TODO: Remove if statement; was used for testing!
     if (sample_index >= 48000 * 20)
     {
         this->reset();

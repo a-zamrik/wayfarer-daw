@@ -332,6 +332,7 @@ int main(int argc, char** argv)
     argparser.add_arguement("-g", "--gain", 1, "adjusts master output gain. 0.0 <= gain <= 0.05. Gain will be truncated if limits exceeded", ArgTypes::ARG_FLOAT);
     argparser.add_arguement("-cpp", "--controller-poll-period", 1, "In milliseconds, how offten to poll for controller input", ArgTypes::ARG_INT);
     argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
+    argparser.add_arguement("-bpm", "--beats-per-minute", 1, "Set the beats per minute", ArgTypes::ARG_INT);
 
     argparser.parse(argc, argv);
     std::cout << "Show devices = " << argparser.get_arguement("-d")->is_present() << std::endl;
@@ -351,6 +352,12 @@ int main(int argc, char** argv)
 
     if (argparser.get_arguement("-f")->is_present()) {
         GConfig::get_instance().set_frames_per_buffer(argparser.get_arguement("-f")->get_arg_int());
+    }
+
+    if (argparser.get_arguement("-bpm")->is_present()) {
+        GConfig::get_instance().set_bpm(argparser.get_arguement("-bpm")->get_arg_int());
+    } else {
+        GConfig::get_instance().set_bpm(120);
     }
 
   

@@ -107,7 +107,7 @@ WaveFileLoader::load(std::string _file_path) {
         }
     }
 
-    std::cout << "Read " << data[0].size() << std::endl;
+    //std::cout << "Read " << data[0].size() << std::endl;
 
     if (bytes_read != header.FirstSubChunk.SubchunkSize)
     {
@@ -136,7 +136,7 @@ WaveFileLoader::print_header(WaveFileHeader & header)
     std::cout << "Mum Channels: " << header.NumChannels << std::endl;
     std::cout << "Sample Rage: " << header.SampleRate << std::endl;
     std::cout << "Bits Per Sample: " << header.BitsPerSample << std::endl;
-    std::cout << "Subchunk 2: " << header.FirstSubChunk.SubchunkID << std::endl;
+    //std::cout << "Subchunk 2: " << header.FirstSubChunk.SubchunkID << std::endl;
     std::cout << "Data Size: " << header.FirstSubChunk.SubchunkSize << std::endl;
 }
     

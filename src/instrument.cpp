@@ -12,11 +12,11 @@
 SineSynth::SineSynth()
 {
 
-    printf("CREATING SYNTH\n");
+    //printf("CREATING SYNTH\n");
 
     for (unsigned n = START_MIDI_NOTE; n <= END_MIDI_NOTE; n++)
     {
-        printf("Sine @%f\n", GMidi::midi_note_to_freq(n));
+        //printf("Sine @%f\n", GMidi::midi_note_to_freq(n));
         this->oscilators.push_back(Sine(GMidi::midi_note_to_freq(n)));
     }
 

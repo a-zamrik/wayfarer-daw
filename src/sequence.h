@@ -6,6 +6,19 @@
 #include <memory>
 #include "instrument.h"
 
+// May not want this, just do some math based on the bottom time signature number
+// and the passed in note type
+//
+// enum NoteType 
+// {
+//     WHOLE     = 1,
+//     HALF      = 2,
+//     QUARTER   = 4,
+//     EIGTH     = 8,
+//     SIXTEENTH = 16
+// };
+
+
 class MidiSequence
 {
 
@@ -29,11 +42,6 @@ private:
     // piano_roll[A4] -> list of A4 notes in order of when they are pressed
     //
     // THE LINKED LIST OF NOTES MUST BE SORTED IN ORDER OF START_TIME!!!!
-
-    // TODO: need to house a dual stack maybe?, or just use vector instead of linked list
-    // TODO: Yeah just use a vector for now, we can optimize later
-
-    // TODO: LINKED LIST NEEDS a operator=, but that wont fix this issue.
     std::vector<
         std::shared_ptr<
             LinkedList<Note>
@@ -52,8 +60,24 @@ public:
 
     MidiSequence();
 
+    // TODO: Impliment loading a midi file
     
+    /*  Add a note to this sequence. This may remove/modify notes if the note added overlaps pervious notes.
+    *
+    *   start_time_s  => At what time t (in seconds) is the note pressed 
+    *   duration_s    => How long the note is pressed in seconds
+    *   midi_note_num => which midi key to push
+    */
     void add_note(uint32_t midi_note_num, float start_time_s, float duration_s);
+
+    // TODO: need a way to convert start time s and duration to quarter/8th/half/ and whole notes
+    //       need to be able to specify which measure and beat they should be placed it
+    //
+    // void add_note(uint32_t midi_note_num, 
+    //               uint32_t measure, 
+    //               uint32_t beat, 
+    //               uint32_t type)
+
 
     // Tell sequencer to move forward in time by a single sample
     void tick();

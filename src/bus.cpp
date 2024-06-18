@@ -216,7 +216,7 @@ Bus::move_effect_to(uint64_t src_idx, uint32_t dest_idx)
     auto new_effect =  std::shared_ptr<AutoFilter> (new AutoFilter(0.707f, 1000.f));
 
     auto it_src =  this->effects.begin();
-    it_src += src_idx;
+    it_src += (unsigned) src_idx;
 
     // Rebuild effect list
     this->effects_lock.lock();
