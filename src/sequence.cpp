@@ -8,6 +8,8 @@ MidiSequence::MidiSequence()
 {
     sample_index = 0;
 
+    update_n_samples = (uint32_t) (update_period_ms * GConfig::get_instance().get_sample_rate());
+
     for (int i = 0; i < MAX_MIDI; i++)
     {
         piano_roll.push_back(std::shared_ptr<LinkedList<Note>>(new LinkedList<Note>()));
@@ -86,19 +88,40 @@ MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duratio
     }
 }
 
+void
+MidiSequence::set_time(float time_s)
+{
+    // iterators should be set to begin for each note
+    this->reset();
+    sample_index = (size_t) (time_s * GConfig::get_instance().get_sample_rate());
+
+    for (int i = 0; i < piano_roll.size(); i++)
+    {
+        // skip past notes that are before time_s as denoted by sample_index
+        while (note_its[i] != piano_roll[i]->end() && sample_index >= (*(note_its[i])).start_s * GConfig::get_instance().get_sample_rate())
+        {
+            // go to next note. the current note starts before time_s.
+            note_its[i]++;
+        }
+    }
+}
 
 void
 MidiSequence::tick()
 {
     sample_index++;
 
-    // TODO:
+    // Note:
     //      We may want to early return so we aren't running this so much. we may want
     //      to set a update period.
     //      a sample rate of 48,000 means we run this code 20 microseconds.
     //      Midi notes do not need to be updated at that frequency.
     //      Maybe 1 ms is good, so a sample rate of 48,000 we update every 48 samples
     //      1 ms is also really frequent, we could just update every 5 - 10 ms
+    if (sample_index % update_n_samples)
+    {
+        return;
+    }
 
     // TODO: Remove if statement; was used for testing!
     if (sample_index >= 48000 * 20)

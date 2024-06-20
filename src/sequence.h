@@ -37,6 +37,9 @@ private:
     };
 
     size_t sample_index;
+
+    float update_period_ms = 1.0;  // how frequenlty should we check check for midin note changes
+    uint32_t update_n_samples;     // how many samples need to pass before we cheack for midi not chagnes
     
     // Map midi note number to the list of note events for that note
     // piano_roll[A4] -> list of A4 notes in order of when they are pressed
@@ -59,8 +62,6 @@ public:
     std::weak_ptr<SineSynth> bound_instrument;
 
     MidiSequence();
-
-    // TODO: Impliment loading a midi file
     
     /*  Add a note to this sequence. This may remove/modify notes if the note added overlaps pervious notes.
     *
@@ -84,9 +85,10 @@ public:
 
     void reset();
 
-    // TODO: set sample_index to represent time.
-    //       update key states and note iterators to reflect change
-    void set_time(float time) { critical_error("NOT IMPLMENTED");}
+    /*
+    *   move this sequence play needle to be at time_s where time_s is the time in seconds.
+    */
+    void set_time(float time_s);
 
 };
 
