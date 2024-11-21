@@ -25,9 +25,9 @@ MidiSequence::MidiSequence()
     // }
 
     add_note(60, 0.1f, 0.5f);
-    add_note(60, 0.2f, 0.5f);
-    add_note(60, 0.21f, 10.f);
-    add_note(60, 0.f, 10.f);
+    add_note(61, 0.2f, 0.5f);
+    add_note(62, 0.21f, 10.f);
+    add_note(63, 0.f, 10.f);
 
 
 
@@ -53,7 +53,7 @@ MidiSequence::add_note(uint32_t midi_note_num, float start_time_s, float duratio
 {
     // Insert the note into the correct order
     LinkedList<Note>::Iterator it = piano_roll[midi_note_num]->sorted_insert(
-        MidiSequence::Note(start_time_s, duration_s),
+        Note(start_time_s, duration_s),
         [] (const Note & rhs, const Note & new_entry) -> bool {return rhs.start_s > new_entry.start_s;}
     );
 

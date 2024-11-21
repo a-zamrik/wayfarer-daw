@@ -2,7 +2,9 @@
 #include "../error.h"
 #include <stdio.h>
 #include "bus_track_view.h"
+#include "../sequence.h"
 #include <cstdint>
+#include <vector>
 
 // Defined by CMAKE PREPROCESSING
 #if defined(USE_IMGUI)
@@ -28,11 +30,23 @@ void draw_header()
     ImGui::SetCursorScreenPos(ImVec2(screen_pos.x, screen_pos.y + HEADER_HEIGHT));
 }
 
-void draw_bus_track(uint32_t track_id)
+void draw_bus_track(uint32_t track_id, std::shared_ptr<Bus> & _bus)
 {
     auto screen_pos = ImGui::GetCursorScreenPos();
     uint32_t track_width = ImGui::GetWindowSize().x - BUS_INTERFACE_WIDTH;
     ImGui::GetWindowDrawList()->AddRectFilled(screen_pos, ImVec2(screen_pos.x + track_width, screen_pos.y + 300), IM_COL32(255, 255, 255, 255), 0.0f, 0);
+
+    for (std::shared_ptr<LinkedList<Note>> & key_list : _bus->midi_sequence->piano_roll)
+    {
+        int i = 0;
+        for (Note & note : (*key_list))
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(screen_pos, ImVec2(screen_pos.x + (note.start_s + 10) + i, screen_pos.y + (note.duration_s + 10)), IM_COL32(255, 0, 255, 255), 0.0f, 0);
+
+        }
+        i += 500;
+    }
+
 }
 
 void 
@@ -51,7 +65,7 @@ GuiBusTrackView::draw_gui()
         ImGui::PushID(i);
         
         ImGui::Button("Bus");
-        draw_bus_track(i);
+        draw_bus_track(i, bus);
         ImGui::PopID();
         i++;
     }

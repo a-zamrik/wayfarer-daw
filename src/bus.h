@@ -30,8 +30,6 @@ protected:
 
 public:
 
-    // TODO: NEED TO STORE MIDI NOTE SEGMENTS SOME HOW AND READ FROM THEM.
-    //       CREATE MIDI NOTE SEQUENCER CLASS OR SOMETHIGN
 
     
     std::shared_ptr<SineSynth> & get_instrument() {return this->synth;}
@@ -42,8 +40,6 @@ public:
 
 
 
-    // TODO: Change to use our linked list class
-    // LinkedList<std::shared_ptr<AutoFilter>> effects;
     LinkedList<std::shared_ptr<AutoFilter>> effects;
     std::mutex effects_lock;
 

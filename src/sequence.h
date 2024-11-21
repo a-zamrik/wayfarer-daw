@@ -19,12 +19,16 @@
 // };
 
 
-class MidiSequence
+class GSequenceMaster
 {
+    /*
+    *    Contianer where all sequences are registered to.
+    *    Allows us to play / pause / and jump in time for all sequences.
+    *    Also allows us to draw gui for each bus
+    */
+};
 
-private: 
-
-    struct Note
+struct Note
     {
         // At what time t (in seconds) is the note pressed
         float start_s;
@@ -35,12 +39,28 @@ private:
         Note(float start_time, float duraiton) : start_s(start_time), duration_s(duraiton) {}
         Note() : start_s(0), duration_s(0) {}
     };
+    
+class MidiSequence
+{
+
+private: 
+
+    
 
     size_t sample_index;
 
     float update_period_ms = 1.0;  // how frequenlty should we check check for midin note changes
     uint32_t update_n_samples;     // how many samples need to pass before we cheack for midi not chagnes
     
+   
+
+    // Keeps track if the note has been pressed or not, need to know when to trigger a midi event
+    std::vector<bool> note_state;
+
+    // Keep track of where we are in notes sequence
+    std::vector<LinkedList<Note>::Iterator> note_its;
+
+public:
     // Map midi note number to the list of note events for that note
     // piano_roll[A4] -> list of A4 notes in order of when they are pressed
     //
@@ -51,13 +71,6 @@ private:
         >
     > piano_roll;
 
-    // Keeps track if the note has been pressed or not, need to know when to trigger a midi event
-    std::vector<bool> note_state;
-
-    // Keep track of where we are in notes sequence
-    std::vector<LinkedList<Note>::Iterator> note_its;
-
-public:
     // Bounded instrument
     std::weak_ptr<SineSynth> bound_instrument;
 

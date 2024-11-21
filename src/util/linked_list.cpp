@@ -10,7 +10,7 @@
 template class LinkedList<int>;
 template class LinkedList<std::shared_ptr<AutoFilter>>;
 template class LinkedList<std::shared_ptr<Bus>>;
-template class LinkedList<MidiSequence::Note>;
+template class LinkedList<Note>;
 // You will only be able to use LinkedList with the listed above
 
 template <class T>
