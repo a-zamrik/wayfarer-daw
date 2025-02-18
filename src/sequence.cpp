@@ -24,10 +24,10 @@ MidiSequence::MidiSequence()
     //     add_note(i, 3.0f + (0.5f * (i - 60)), 0.1f);
     // }
 
-    add_note(60, 0.1f, 0.5f);
-    add_note(61, 0.2f, 0.5f);
-    add_note(62, 0.21f, 10.f);
-    add_note(63, 0.f, 10.f);
+    // add_note(60, 0.1f, 0.5f);
+    // add_note(61, 0.2f, 0.5f);
+    // add_note(62, 0.21f, 10.f);
+    // add_note(63, 0.f, 10.f);
 
 
 

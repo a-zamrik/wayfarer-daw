@@ -321,7 +321,7 @@ int main(int argc, char** argv)
     // delete list;
     // exit(1);
 
-    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Who.wav");
+    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\The Mamas & the Papas - California Dreamin'.wav");
     
     // set up arguements
     ArgParser argparser = ArgParser();
