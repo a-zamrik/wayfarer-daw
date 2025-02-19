@@ -31,6 +31,7 @@ Similar to Ableton's Auto Filter, Allows for Low Pass, High Pass, Band Pass, and
 Target frequency and Q of the filter may be changed through the GUI.
 
 [![Audio Effect Showcase](https://img.youtube.com/vi/kmuEwH7KUCU/maxresdefault.jpg)](https://youtu.be/kmuEwH7KUCU)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/kmuEwH7KUCU?si=FBGt7suXw0Z5Hfeq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Audio Effects to be ported from VTTTS Synth
 #### Micro-cassette emulator
