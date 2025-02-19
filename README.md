@@ -15,7 +15,7 @@ It is very much a proof of concept currently.
     * ADSR, and Gain are configurable
 * WAV files may be loaded and played
 * Audo Effect Chains
-    This affects both the Sine Synth and any audio currently being played.
+    * This affects both the Sine Synth and any audio currently being played.
     Audio effects may be added, removed, or re-ordered in real time.
 * A POC GUI utilizing the DearImGui framework.
 
