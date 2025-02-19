@@ -28,8 +28,8 @@ A multi-voice sine synth is provided, it can be played through keyboard controls
 
 ## Available Audio Effects
 #### Auto Filter
-Similar to Ableton's Auto Filter, Allows for Low Pass, High Pass, Band Pass, and Notch Filters.
-Target frequency and Q of the filter may be changed through the GUI.
+Similar to Ableton's Auto Filter, allows for Low Pass, High Pass, Band Pass, and Notch Filters.
+Target frequency and the Q of the filter may be changed through the GUI.
 
 <sub>Click below to watch</sub>
 [![Audio Effect Showcase](https://img.youtube.com/vi/kmuEwH7KUCU/maxresdefault.jpg)](https://youtu.be/kmuEwH7KUCU)
