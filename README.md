@@ -23,6 +23,7 @@ Wayfarer is the successor of vttts Synth; writen in a more apt language for real
 ## Available Instruments
 A multi-voice sine synth is provided, it can be played through keyboard controls. Attack time, decay time, attack amplitude, sustain amplitude, and release time are configurable.
 
+<sub>Click to watch</sub>
 [![Midi Note Showcase](https://img.youtube.com/vi/JvfmRe61hF0/maxresdefault.jpg)](https://youtu.be/JvfmRe61hF0)
 
 ## Available Audio Effects
@@ -30,8 +31,9 @@ A multi-voice sine synth is provided, it can be played through keyboard controls
 Similar to Ableton's Auto Filter, Allows for Low Pass, High Pass, Band Pass, and Notch Filters.
 Target frequency and Q of the filter may be changed through the GUI.
 
+<sub>Click to watch</sub>
 [![Audio Effect Showcase](https://img.youtube.com/vi/kmuEwH7KUCU/maxresdefault.jpg)](https://youtu.be/kmuEwH7KUCU)
-<iframe width="560" height="315" src="https://www.youtube.com/embed/kmuEwH7KUCU?si=FBGt7suXw0Z5Hfeq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
 ## Audio Effects to be ported from VTTTS Synth
 #### Micro-cassette emulator
