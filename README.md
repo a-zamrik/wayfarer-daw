@@ -1,8 +1,8 @@
 # Wayfarer Digital Audio Workstation
-A successor of a previously made DAW written in python dubbed "vttts synth"
+A successor of a previously made DAW written in python dubbed "vttts synth".
 vttts synth was orignaly an audio editing exploration project that slowly growed into a DAW.
 vttts synth was a faceless DAW controlled through voice commands.
-It allowed for audio busses, effects, and sythisied speach to be controlled through configurable voice commands.
+It allowed for audio busses, effects, and synthesized speech to be controlled through configurable voice commands.
 
 Wayfarer was intended to be the successor of VTTTS Synth. It is very much a proof of concept currently.
 
@@ -14,18 +14,18 @@ Wayfarer was intended to be the successor of VTTTS Synth. It is very much a proo
 * WAV files may be loaded and played
 * Audo Effect Chains
     This affects both the Sine Synth and any audio currently being played.
-    Audio effects may be added, removed, or re-ordered in realtime.
+    Audio effects may be added, removed, or re-ordered in real time.
 * A POC GUI utilizing the DearImGui framework.
 
 ## Available Audio Effects
 #### Auto Filter
-    Similar to Ableton's Auto Filter, Allos for Low Pass, High Pass, Band Pass, and Notch Filters.
+    Similar to Ableton's Auto Filter, Allows for Low Pass, High Pass, Band Pass, and Notch Filters.
 
 ## Audio Effects to be ported from VTTTS Synth
-#### Microcassette emulator
+#### Micro-cassette emulator
 #### Reverb
-#### Phasevocoder effects such as; vocoder, pitch shifter, robotic vocoder
-#### Paulstreatch
+#### Phase vocoder effects such as; vocoder, pitch shifter, robotic vocoder
+#### Paul streatch
 
 ## Building
 ```bash
