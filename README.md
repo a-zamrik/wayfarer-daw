@@ -22,6 +22,7 @@ It is very much a proof of concept currently.
 ## Available Audio Effects
 #### Auto Filter
 Similar to Ableton's Auto Filter, Allows for Low Pass, High Pass, Band Pass, and Notch Filters.
+Target frequency and Q of the filter may be changed through the GUI.
 
 ## Audio Effects to be ported from VTTTS Synth
 #### Micro-cassette emulator
