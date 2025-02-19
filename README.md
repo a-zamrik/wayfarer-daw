@@ -4,7 +4,9 @@ vttts synth was orignaly an audio editing exploration project that slowly growed
 vttts synth was a faceless DAW controlled through voice commands.
 It allowed for audio busses, effects, and synthesized speech to be controlled through configurable voice commands.
 
-Wayfarer was intended to be the successor of VTTTS Synth. It is very much a proof of concept currently.
+Wayfarer was intended to be the successor of VTTTS Synth; in which it is written in C++ (ideal for realtime applications), and it is interacted with a GUI instead of spoken words.
+
+It is very much a proof of concept currently.
 
 ![Wayfarer](img/Simple%20Overview.png)
 
