@@ -11,7 +11,7 @@ GMidi::midi_note_to_freq(unsigned midi_note)
 }
 
 void 
-GMidi::create_event(unsigned note_num, bool is_pressed) 
+GMidi::create_global_event(unsigned note_num, bool is_pressed) 
 {
     auto event = MidiEvent(is_pressed, note_num);
     for (auto i : this->active_instruments)
@@ -22,7 +22,7 @@ GMidi::create_event(unsigned note_num, bool is_pressed)
 }
 
 void 
-GMidi::activate_instrument(SineSynth  * i, std::string name)
+GMidi::activate_instrument(std::shared_ptr<SineSynth> i, std::string name)
 {
     this->active_instruments[name] = i;
 }

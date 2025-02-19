@@ -58,6 +58,10 @@
 #include "instrument.h"
 #include "midi.h"
 #include "loader/wave.h"
+#include "gui/gui.h"
+#include "gui/bus_track_view.h"
+#include "util/linked_list.h"
+
 
 
 #ifdef _WIN32
@@ -268,20 +272,57 @@ error:
 int main(int argc, char** argv);
 int main(int argc, char** argv)
 {
-    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Crazy_Dave_Intro_Theme_128.wav");
+    
+    // LinkedList<int> * list = new LinkedList<int>();
+    // list->push_back(512);
+    // list->push_back(25);
+    // list->push_back(64);
 
-
-    // for (int s = 0; s < audio_track->n_samples(); s++)
+    // for (auto entry = list->begin() ; entry != list->end(); entry++)
     // {
-    //     for (int c = 0; c < 2; c++)
+    //     printf("%d\n", *entry);
+    // }
+    // printf("Size = %zu\n", list->size());
+
+    // for (auto entry = list->begin() ; entry != list->end(); entry++)
+    // {
+    //     if (*entry == 512)
     //     {
-    //         std::cout << audio_track->operator()(c, s) << std::endl;
+    //         list->move_to_index(entry, 2);
+    //         break;
     //     }
     // }
+    // printf("Size = %zu\n", list->size());
 
-    //  std::cout << audio_track->n_samples() << std::endl;
+    // printf("\n");
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // printf("Size = %zu\n", list->size());
 
+    // printf("\npop back %d\n", list->pop_back());
+    // printf("pop front %d\n\n", list->pop_front());
 
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // printf("Size = %zu\n", list->size());
+
+    // list->push_front(75);
+    // list->push_back(81);
+    // list->push_front(5);
+    // printf("Size = %zu\n", list->size());
+    // for (auto entry : (*list))
+    // {
+    //     printf("%d\n", entry);
+    // }
+    // delete list;
+    // exit(1);
+
+    std::shared_ptr<AudioTrack> audio_track = WaveFileLoader::load("C:\\Users\\Adam\\Music\\Microsoft Windows 95 Startup Sound.wav");
+    
     // set up arguements
     ArgParser argparser = ArgParser();
     argparser.add_arguement("-d", "--devices", 0, "List all audio devices availble");
@@ -291,6 +332,7 @@ int main(int argc, char** argv)
     argparser.add_arguement("-g", "--gain", 1, "adjusts master output gain. 0.0 <= gain <= 0.05. Gain will be truncated if limits exceeded", ArgTypes::ARG_FLOAT);
     argparser.add_arguement("-cpp", "--controller-poll-period", 1, "In milliseconds, how offten to poll for controller input", ArgTypes::ARG_INT);
     argparser.add_arguement("-o", "--master-out", 1, "Specifies output device for master bus");
+    argparser.add_arguement("-bpm", "--beats-per-minute", 1, "Set the beats per minute", ArgTypes::ARG_INT);
 
     argparser.parse(argc, argv);
     std::cout << "Show devices = " << argparser.get_arguement("-d")->is_present() << std::endl;
@@ -312,10 +354,17 @@ int main(int argc, char** argv)
         GConfig::get_instance().set_frames_per_buffer(argparser.get_arguement("-f")->get_arg_int());
     }
 
+    if (argparser.get_arguement("-bpm")->is_present()) {
+        GConfig::get_instance().set_bpm(argparser.get_arguement("-bpm")->get_arg_int());
+    } else {
+        GConfig::get_instance().set_bpm(120);
+    }
+
   
     GConfig::get_instance().print_config();
     GConfig::get_instance().check_config();
 
+    audio_track->target_sample_rate(GConfig::get_instance().get_sample_rate());
 
     PaError err = Pa_Initialize();
     if (err != paNoError)
@@ -323,11 +372,29 @@ int main(int argc, char** argv)
         critical_error_no_line_print("Failed to initialize portaudio");
     }
 
-    MasterBus master_bus = MasterBus().set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
-    
-    master_bus.audio_track = audio_track;
-    master_bus.init_stream();
-    master_bus.start_stream();
+
+    std::shared_ptr<Bus> bus_one = std::shared_ptr<Bus>(new Bus());
+    std::shared_ptr<MasterBus> master_bus = std::shared_ptr<MasterBus>(new MasterBus());
+    if (argparser.get_arguement("-g")->is_present())
+        master_bus->set_gain(0.01f + argparser.get_arguement("-g")->get_arg_float());
+    else
+        master_bus->set_gain(0.01f);
+
+    bus_one->set_audio_track(audio_track);
+    master_bus->add_bus(bus_one);
+
+#ifdef USE_IMGUI
+    // Register busses and master busses to Gui
+    std::shared_ptr<GuiBusTrackView> gui_bus_track_view = std::shared_ptr<GuiBusTrackView>(new GuiBusTrackView());
+    gui_bus_track_view->master_bus = master_bus;
+    gui_bus_track_view->busses.push_back(bus_one);
+    WayfarerGUI::get_instance().register_comp(std::weak_ptr<WayfarerGuiComp>(gui_bus_track_view));
+#endif
+
+    master_bus->init_stream();
+    master_bus->start_stream();
+
+    WayfarerGUI::get_instance().register_comp(std::weak_ptr<WayfarerGuiComp>(bus_one));
 
 #ifdef _WIN32
 
@@ -336,7 +403,7 @@ int main(int argc, char** argv)
     kb_controller.add_key_bind(VK_MAP::Z, std::bind(&KeyboardController::octave_shift_down, &kb_controller));
     GControllers::get_instance().register_controller(kb_controller);
     
-    GMidi::get_instance().activate_instrument(&master_bus.synth, "sine_synth");
+    GMidi::get_instance().activate_instrument(bus_one->get_instrument(), "sine_synth");
 
     unsigned poll_period_ms = 10;
     if (argparser.get_arguement("-cpp")->is_present()) {
@@ -345,7 +412,11 @@ int main(int argc, char** argv)
 
 #endif
 
-    for (;;)
+#ifdef USE_IMGUI
+    while(WayfarerGUI::get_instance().update_gui())
+#else
+    for(;;)
+#endif
     {
 
 
@@ -353,8 +424,6 @@ int main(int argc, char** argv)
 
 #ifdef _WIN32
 
-    // TODO: Find a way to have this be delagte instead of polling. 
-    // Update all controllers every poll_period ms
     kb_controller.tick();
     Sleep(poll_period_ms);
 
@@ -363,5 +432,27 @@ int main(int argc, char** argv)
 
     }
 
+
+#ifdef USE_IMGUI
+    WayfarerGUI::get_instance().cleanup();
+#endif
+
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

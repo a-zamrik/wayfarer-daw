@@ -4,6 +4,24 @@
 #include <vector>
 #include <memory>
 
+
+class RollingAverage
+{
+    std::vector<float> circ_buff;
+    int c_buff_index; // Will point to the last added sample, just before adding
+    float avg;
+
+public:
+
+    RollingAverage(float time_window_s);
+
+    // Returns the average after adding the new sample s
+    float add_sample(float s);
+    inline float get_avg() const {return this->avg;}
+};
+
+
+
 class Envelope
 {
 
@@ -30,7 +48,6 @@ protected:
 public:
     Envelope(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a);
 
-
     void reset() {this->step = 0;}
 
     float step_ads();
@@ -38,6 +55,14 @@ public:
 
     // Envlope has finished; this->step is at end of envelope, need to call reset()
     bool is_done();
+
+    void set_atk_amp(float amp) {this->attack_amp  = amp;}
+    void set_sus_amp(float amp) {this->sustain_amp = amp;}
+
+    void set_env(float atk_t, float atk_a, float dec_t, float rel_t, float sus_a);
+
+
+    // void to_float_array(float * array, uint32_t count);
 
 };
 

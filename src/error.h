@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define critical_error(format, ...) {\
-    printf(format " %s %d", __VA_ARGS__, __FILE__, __LINE__); \
+    printf(format "  %s %d", __VA_ARGS__, __FILE__, __LINE__); \
     exit(-1);}
 
 // Used for errors that should abort the program, but printing file/lines are not useful.

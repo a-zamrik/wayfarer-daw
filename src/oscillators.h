@@ -38,7 +38,8 @@ private:
     float hz = 400;
     float phase_shift = 0;
 
-    Envelope adsr_env;
+   
+    RollingAverage adsr_env_rolling_avg; // Used to smooth out sharp envelope changes, should have a small time-window. 1 ms is good
 
     bool on = false;
 
@@ -47,8 +48,10 @@ public:
     // TODO: add isDriving 
     bool driving = false;
 
+    Envelope adsr_env;
+
     
-    Sine(float _hz) : hz(_hz), t(0), adsr_env(0.01f, 1.0f, 0.01f, 2.0f, 0.4f) {on=false;}
+    Sine(float _hz) : hz(_hz), t(0), adsr_env(0.01f, 1.0f, 0.01f, 2.0f, 0.4f), adsr_env_rolling_avg(0.0025f) {on=false;}
     virtual float get_next_sample();
 
     void set_hz(float);

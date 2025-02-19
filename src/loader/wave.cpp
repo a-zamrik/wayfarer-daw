@@ -64,11 +64,12 @@ WaveFileLoader::load(std::string _file_path) {
 
     for (int c=0; c < header.NumChannels; c++)
     {
-        data.push_back(std::vector<float>());
+        data.push_back(std::vector<float>(header.FirstSubChunk.SubchunkSize / (header.BitsPerSample / 8)));
     }
 
 
     size_t bytes_read = 0;
+    size_t sample_index = 0;
     while (bytes_read < header.FirstSubChunk.SubchunkSize)
     {
 
@@ -93,8 +94,8 @@ WaveFileLoader::load(std::string _file_path) {
 
 
 
-            
-        data[current_channel].push_back(sample);
+        
+        data[current_channel][sample_index] = sample;
         
         
 
@@ -102,10 +103,11 @@ WaveFileLoader::load(std::string _file_path) {
         if (current_channel == header.NumChannels)
         {
             current_channel = 0;
+            sample_index++;
         }
     }
 
-    std::cout << "Read " << data[0].size() << std::endl;
+    //std::cout << "Read " << data[0].size() << std::endl;
 
     if (bytes_read != header.FirstSubChunk.SubchunkSize)
     {
@@ -114,7 +116,7 @@ WaveFileLoader::load(std::string _file_path) {
 
     wave_file.close();
 
-    return std::shared_ptr<AudioTrack>(new AudioTrack(data));
+    return std::shared_ptr<AudioTrack>(new AudioTrack(data, header.SampleRate));
 }
 
 void
@@ -134,7 +136,7 @@ WaveFileLoader::print_header(WaveFileHeader & header)
     std::cout << "Mum Channels: " << header.NumChannels << std::endl;
     std::cout << "Sample Rage: " << header.SampleRate << std::endl;
     std::cout << "Bits Per Sample: " << header.BitsPerSample << std::endl;
-    std::cout << "Subchunk 2: " << header.FirstSubChunk.SubchunkID << std::endl;
+    //std::cout << "Subchunk 2: " << header.FirstSubChunk.SubchunkID << std::endl;
     std::cout << "Data Size: " << header.FirstSubChunk.SubchunkSize << std::endl;
 }
     

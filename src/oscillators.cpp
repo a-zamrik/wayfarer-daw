@@ -78,9 +78,10 @@ Sine::get_next_sample()
                 sin(( ( TWO_PI * this->hz * this->t) + this->phase_shift ) / ( GConfig::get_instance().get_sample_rate() ))
             );
 
-    // TODO: NEED OT PREVENT OVERFLOW
+    // TODO: NEED OT PREVENT OVERFLOW?
     this->t++;
-    //this->t = this->t % GConfig::get_instance().get_sample_rate(); // prevent overflow
+
+    env_val = this->adsr_env_rolling_avg.add_sample(env_val);
 
     return next_sample * env_val;
 }
