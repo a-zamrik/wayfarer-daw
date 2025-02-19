@@ -47,7 +47,12 @@ And so on...
 
 The octave of each note may be changed using **z x**, where **z** will decrease the octave, and **x** will increase.
 
+## Dependencies
+[PortAudio library](https://files.portaudio.com/docs/v19-doxydocs/tutorial_start.html)
 
+[DearImGUI](https://github.com/ocornut/imgui)
+
+Project assumes the use of DirectX12 for DearImGUI
 
 ## Building First Time
 ```bash
